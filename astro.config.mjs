@@ -38,7 +38,7 @@ export default defineConfig({
 						'install/systemd',
 						{
 							label: 'Reverse proxy',
-							items: ['install/reverse-proxy/overview', 'install/reverse-proxy/caddy', 'install/reverse-proxy/nginx'],
+							items: ['install/reverse-proxy/overview', 'install/reverse-proxy/caddy', 'install/reverse-proxy/nginx', 'install/reverse-proxy/ssl-preread'],
 						},
 						{
 							label: 'Go-нода',
