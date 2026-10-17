@@ -1,6 +1,6 @@
 ---
 title: Docker Compose и PostgreSQL
-description: Ручная установка GoWave в Docker вместе с PostgreSQL 17.
+description: Ручная установка GoWave в Docker вместе с PostgreSQL 18.
 sidebar:
   order: 2
 ---
@@ -38,7 +38,7 @@ docker compose up -d
 ## Как устроен compose
 
 - **`gowave`** - панель. Весь `.env` передаётся в контейнер (`env_file`), а подключение к базе и порты задаются в самом compose и переопределяют `.env`.
-- **`postgres`** - PostgreSQL 17 с томом `postgres_data`. Порт открыт только на `127.0.0.1` для резервных копий и администрирования.
+- **`postgres`** - PostgreSQL 18 с томом `postgres_data`, смонтированным в `/var/lib/postgresql`. Порт открыт только на `127.0.0.1` для резервных копий и администрирования. Установки на PostgreSQL 17 обновляются по [отдельной инструкции](../../migration/postgres-18/).
 - `APP_SECRET` и `POSTGRES_PASSWORD` обязательны: без них `docker compose` откажется запускаться.
 - Метрики (`3001`) доступны только с `127.0.0.1`; задайте `METRICS_USER` и `METRICS_PASS`, чтобы их собирать.
 

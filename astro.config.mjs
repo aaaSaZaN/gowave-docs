@@ -57,7 +57,7 @@ export default defineConfig({
 				{
 					label: 'Миграция',
 					translations: { en: 'Migration' },
-					items: ['migration/remnawave', 'migration/pasarguard', 'migration/sqlite-to-docker', 'migration/docker-node'],
+					items: ['migration/remnawave', 'migration/pasarguard', 'migration/sqlite-to-docker', 'migration/postgres-18', 'migration/docker-node'],
 				},
 				{
 					label: 'Справочник',
