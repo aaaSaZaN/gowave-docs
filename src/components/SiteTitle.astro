@@ -1,0 +1,65 @@
+---
+// The default site title plus docs.rw-style section links next to it.
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const lang = Astro.locals.starlightRoute?.lang === 'en' ? 'en' : 'ru';
+const links = [
+	{ label: lang === 'en' ? 'Docs' : 'Документация', href: lang === 'en' ? `${base}/en/` : `${base}/`, current: true },
+	{ label: lang === 'en' ? 'Changelog' : 'Изменения', href: 'https://github.com/aaaSaZaN/gowave/releases', external: true },
+	{ label: 'API', href: `${base}/api/`, external: false },
+];
+---
+
+<div class="title-with-links">
+	<Default />
+	<nav class="header-links" aria-label={lang === 'en' ? 'Sections' : 'Разделы'}>
+		{
+			links.map((link) => (
+				<a href={link.href} class:list={{ current: link.current }} {...(link.external ? { target: '_blank', rel: 'noopener' } : {})}>
+					{link.label}
+					{link.external && <span aria-hidden="true">↗</span>}
+				</a>
+			))
+		}
+	</nav>
+</div>
+
+<style>
+	.title-with-links {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		min-width: 0;
+	}
+	.header-links {
+		display: none;
+		gap: 0.25rem;
+	}
+	.header-links a {
+		padding: 0.35rem 0.7rem;
+		border-radius: 0.5rem;
+		color: var(--sl-color-gray-2);
+		font-size: var(--sl-text-sm);
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.header-links a:hover {
+		color: var(--sl-color-white);
+		background: var(--sl-color-gray-6);
+	}
+	.header-links a.current {
+		color: var(--sl-color-accent-high);
+		background: var(--sl-color-accent-low);
+	}
+	.header-links span {
+		font-size: 0.75em;
+		margin-inline-start: 0.2rem;
+	}
+	@media (min-width: 72rem) {
+		.header-links {
+			display: flex;
+		}
+	}
+</style>

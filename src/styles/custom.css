@@ -1,0 +1,11 @@
+/* GoWave teal, the same as the benchmark charts. */
+:root {
+	--sl-color-accent-low: #0b2f36;
+	--sl-color-accent: #0e8fa3;
+	--sl-color-accent-high: #a6e6f0;
+}
+:root[data-theme='light'] {
+	--sl-color-accent-low: #c6eef4;
+	--sl-color-accent: #007c91;
+	--sl-color-accent-high: #00414d;
+}

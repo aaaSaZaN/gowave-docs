@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>GoWave API</title>
+		<link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+		<style>
+			body {
+				margin: 0;
+				background: #0f1117;
+			}
+			.back {
+				position: fixed;
+				z-index: 1000;
+				right: 1rem;
+				bottom: 1rem;
+				padding: 0.5rem 0.9rem;
+				border-radius: 0.5rem;
+				background: #0e8fa3;
+				color: #fff;
+				font: 600 14px system-ui, sans-serif;
+				text-decoration: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app"></div>
+		<a class="back" href="../">← Docs</a>
+		<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.72.1/dist/browser/standalone.js"></script>
+		<script>
+			Scalar.createApiReference('#app', {
+				url: './openapi.json',
+				darkMode: true,
+				hideClientButton: true,
+				hideTestRequestButton: true,
+				showDeveloperTools: 'never',
+				metaData: { title: 'GoWave API' },
+			});
+		</script>
+	</body>
+</html>

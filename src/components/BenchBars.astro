@@ -1,0 +1,131 @@
+---
+// Bun-style horizontal bars for the landing page. Data comes from
+// src/data/benchmarks.json, generated from the benchmark results.
+import data from '../data/benchmarks.json';
+
+interface Props {
+	lang: 'ru' | 'en';
+	/** Link to the benchmarks page; off on that page itself. */
+	showLink?: boolean;
+}
+
+const { lang, showLink = true } = Astro.props;
+const t = (text: { ru: string; en: string }) => text[lang];
+const format = (value: number) =>
+	new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: value < 10 ? 1 : 0 }).format(value);
+
+const groups = data.groups.map((group) => {
+	const max = Math.max(...group.rows.map((row) => row.value));
+	const best = group.higherIsBetter
+		? Math.max(...group.rows.map((row) => row.value))
+		: Math.min(...group.rows.map((row) => row.value));
+	return {
+		...group,
+		rows: group.rows.map((row) => ({
+			...row,
+			width: Math.max(1.5, (row.value / max) * 100),
+			best: row.value === best,
+		})),
+	};
+});
+---
+
+<section class="bench not-content" aria-label={lang === 'ru' ? 'Бенчмарки' : 'Benchmarks'}>
+	<div class="bench-grid">
+		{
+			groups.map((group) => (
+				<figure class="bench-card">
+					<figcaption>
+						<span class="bench-title">{t(group.title)}</span>
+						<span class="bench-subtitle">
+							{t(group.subtitle)} · {group.higherIsBetter ? '↑' : '↓'} {t(group.unit)}
+						</span>
+					</figcaption>
+					{group.rows.map((row) => (
+						<div class:list={['bench-row', { 'bench-row--best': row.best }]}>
+							<span class="bench-label">{row.label}</span>
+							<span class="bench-track">
+								<span class="bench-bar" style={`width: ${row.width}%`} />
+							</span>
+							<span class="bench-value">{format(row.value)}</span>
+						</div>
+					))}
+				</figure>
+			))
+		}
+	</div>
+	<p class="bench-note">
+		{t(data.note)}{' '}
+		{showLink && <a href="benchmarks/">{lang === 'ru' ? 'Методика и все результаты →' : 'Methodology and full results →'}</a>}
+	</p>
+</section>
+
+<style>
+	.bench {
+		margin-block: 1rem 2.5rem;
+	}
+	.bench-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+		gap: 1rem;
+	}
+	.bench-card {
+		margin: 0;
+		padding: 1rem 1.25rem 1.1rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.75rem;
+		background: var(--sl-color-bg-nav);
+	}
+	figcaption {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		margin-bottom: 0.85rem;
+	}
+	.bench-title {
+		font-weight: 600;
+		color: var(--sl-color-white);
+	}
+	.bench-subtitle {
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+	.bench-row {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr auto;
+		align-items: center;
+		gap: 0.6rem;
+		margin-top: 0.45rem;
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-2);
+	}
+	.bench-track {
+		height: 0.7rem;
+		border-radius: 999px;
+		background: var(--sl-color-gray-6);
+		overflow: hidden;
+	}
+	.bench-bar {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: var(--sl-color-gray-4);
+	}
+	.bench-row--best {
+		color: var(--sl-color-white);
+		font-weight: 600;
+	}
+	.bench-row--best .bench-bar {
+		background: var(--sl-color-accent);
+	}
+	.bench-value {
+		font-variant-numeric: tabular-nums;
+		min-width: 4.5rem;
+		text-align: right;
+	}
+	.bench-note {
+		margin-top: 0.9rem;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-3);
+	}
+</style>

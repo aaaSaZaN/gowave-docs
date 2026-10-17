@@ -1,0 +1,566 @@
+{
+  "concurrency": [
+    {
+      "workload": "mixed",
+      "level": 1,
+      "gowave": {
+        "rps": 308.91,
+        "p50": 1.48,
+        "p99": 17.49,
+        "memory": 42.04,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 128.92,
+        "p50": 2.68,
+        "p99": 66.37,
+        "memory": 985.71,
+        "passed": true
+      }
+    },
+    {
+      "workload": "mixed",
+      "level": 8,
+      "gowave": {
+        "rps": 1236.26,
+        "p50": 3.37,
+        "p99": 37.65,
+        "memory": 40.01,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 683.01,
+        "p50": 9.73,
+        "p99": 30.59,
+        "memory": 995.0,
+        "passed": true
+      }
+    },
+    {
+      "workload": "mixed",
+      "level": 32,
+      "gowave": {
+        "rps": 1508.8,
+        "p50": 15.83,
+        "p99": 57.29,
+        "memory": 52.72,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 756.11,
+        "p50": 37.07,
+        "p99": 89.04,
+        "memory": 1023.29,
+        "passed": true
+      }
+    },
+    {
+      "workload": "mixed",
+      "level": 128,
+      "gowave": {
+        "rps": 1408.57,
+        "p50": 69.91,
+        "p99": 292.89,
+        "memory": 55.54,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 769.2,
+        "p50": 141.53,
+        "p99": 403.7,
+        "memory": 1001.4,
+        "passed": true
+      }
+    },
+    {
+      "workload": "reads",
+      "level": 1,
+      "gowave": {
+        "rps": 696.21,
+        "p50": 0.81,
+        "p99": 2.61,
+        "memory": 50.46,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 344.06,
+        "p50": 2.4,
+        "p99": 5.99,
+        "memory": 1041.97,
+        "passed": true
+      }
+    },
+    {
+      "workload": "reads",
+      "level": 8,
+      "gowave": {
+        "rps": 2228.8,
+        "p50": 2.93,
+        "p99": 7.58,
+        "memory": 47.68,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 861.3,
+        "p50": 7.67,
+        "p99": 35.35,
+        "memory": 1017.21,
+        "passed": true
+      }
+    },
+    {
+      "workload": "reads",
+      "level": 32,
+      "gowave": {
+        "rps": 2294.91,
+        "p50": 13.0,
+        "p99": 27.91,
+        "memory": 44.69,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 796.67,
+        "p50": 33.85,
+        "p99": 93.17,
+        "memory": 922.35,
+        "passed": true
+      }
+    },
+    {
+      "workload": "reads",
+      "level": 128,
+      "gowave": {
+        "rps": 2380.12,
+        "p50": 49.84,
+        "p99": 130.88,
+        "memory": 62.65,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 622.67,
+        "p50": 190.66,
+        "p99": 419.86,
+        "memory": 1050.17,
+        "passed": true
+      }
+    },
+    {
+      "workload": "stats",
+      "level": 1,
+      "gowave": {
+        "rps": 1039.65,
+        "p50": 0.81,
+        "p99": 1.19,
+        "memory": 51.75,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 364.45,
+        "p50": 2.51,
+        "p99": 3.59,
+        "memory": 1061.33,
+        "passed": true
+      }
+    },
+    {
+      "workload": "stats",
+      "level": 8,
+      "gowave": {
+        "rps": 6420.75,
+        "p50": 1.01,
+        "p99": 2.08,
+        "memory": 41.14,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 869.54,
+        "p50": 8.82,
+        "p99": 11.87,
+        "memory": 1000.58,
+        "passed": true
+      }
+    },
+    {
+      "workload": "stats",
+      "level": 32,
+      "gowave": {
+        "rps": 11964.83,
+        "p50": 2.15,
+        "p99": 6.15,
+        "memory": 56.33,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 945.81,
+        "p50": 32.69,
+        "p99": 56.83,
+        "memory": 1049.93,
+        "passed": true
+      }
+    },
+    {
+      "workload": "stats",
+      "level": 128,
+      "gowave": {
+        "rps": 12673.38,
+        "p50": 9.01,
+        "p99": 21.43,
+        "memory": 46.68,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 984.21,
+        "p50": 125.95,
+        "p99": 195.68,
+        "memory": 963.15,
+        "passed": true
+      }
+    },
+    {
+      "workload": "subscriptions",
+      "level": 1,
+      "gowave": {
+        "rps": 411.28,
+        "p50": 1.42,
+        "p99": 2.83,
+        "memory": 43.96,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 296.97,
+        "p50": 2.38,
+        "p99": 3.49,
+        "memory": 1021.71,
+        "passed": true
+      }
+    },
+    {
+      "workload": "subscriptions",
+      "level": 8,
+      "gowave": {
+        "rps": 1164.45,
+        "p50": 5.38,
+        "p99": 11.87,
+        "memory": 56.25,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 624.66,
+        "p50": 11.32,
+        "p99": 18.47,
+        "memory": 1053.37,
+        "passed": true
+      }
+    },
+    {
+      "workload": "subscriptions",
+      "level": 32,
+      "gowave": {
+        "rps": 1107.98,
+        "p50": 27.14,
+        "p99": 47.39,
+        "memory": 53.33,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 655.82,
+        "p50": 45.88,
+        "p99": 94.68,
+        "memory": 1038.65,
+        "passed": true
+      }
+    },
+    {
+      "workload": "subscriptions",
+      "level": 128,
+      "gowave": {
+        "rps": 1109.68,
+        "p50": 108.75,
+        "p99": 227.58,
+        "memory": 65.46,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 654.44,
+        "p50": 185.26,
+        "p99": 313.0,
+        "memory": 1037.0,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-detail",
+      "level": 1,
+      "gowave": {
+        "rps": 1587.41,
+        "p50": 0.47,
+        "p99": 0.83,
+        "memory": 50.24,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 789.45,
+        "p50": 1.06,
+        "p99": 1.78,
+        "memory": 1039.74,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-detail",
+      "level": 8,
+      "gowave": {
+        "rps": 5642.05,
+        "p50": 1.09,
+        "p99": 2.85,
+        "memory": 48.73,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 1757.06,
+        "p50": 4.22,
+        "p99": 6.48,
+        "memory": 1018.62,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-detail",
+      "level": 32,
+      "gowave": {
+        "rps": 5261.63,
+        "p50": 5.26,
+        "p99": 14.4,
+        "memory": 55.94,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 1866.44,
+        "p50": 16.62,
+        "p99": 21.36,
+        "memory": 1049.75,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-detail",
+      "level": 128,
+      "gowave": {
+        "rps": 5207.84,
+        "p50": 22.38,
+        "p99": 62.66,
+        "memory": 51.12,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 1864.68,
+        "p50": 67.36,
+        "p99": 80.49,
+        "memory": 984.76,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-list",
+      "level": 1,
+      "gowave": {
+        "rps": 307.02,
+        "p50": 2.2,
+        "p99": 3.42,
+        "memory": 46.99,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 168.96,
+        "p50": 4.82,
+        "p99": 7.82,
+        "memory": 957.92,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-list",
+      "level": 8,
+      "gowave": {
+        "rps": 939.73,
+        "p50": 6.98,
+        "p99": 13.77,
+        "memory": 46.45,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 288.06,
+        "p50": 13.13,
+        "p99": 80.76,
+        "memory": 1061.86,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-list",
+      "level": 32,
+      "gowave": {
+        "rps": 929.69,
+        "p50": 32.72,
+        "p99": 54.21,
+        "memory": 45.45,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 244.62,
+        "p50": 106.46,
+        "p99": 221.37,
+        "memory": 990.26,
+        "passed": true
+      }
+    },
+    {
+      "workload": "user-list",
+      "level": 128,
+      "gowave": {
+        "rps": 938.4,
+        "p50": 127.81,
+        "p99": 280.9,
+        "memory": 58.65,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 221.56,
+        "p50": 552.55,
+        "p99": 915.07,
+        "memory": 1051.59,
+        "passed": false
+      }
+    },
+    {
+      "workload": "writes",
+      "level": 1,
+      "gowave": {
+        "rps": 155.92,
+        "p50": 7.48,
+        "p99": 55.54,
+        "memory": 51.2,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 239.55,
+        "p50": 4.08,
+        "p99": 8.18,
+        "memory": 1044.57,
+        "passed": true
+      }
+    },
+    {
+      "workload": "writes",
+      "level": 8,
+      "gowave": {
+        "rps": 1009.64,
+        "p50": 5.81,
+        "p99": 28.37,
+        "memory": 54.97,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 580.01,
+        "p50": 10.38,
+        "p99": 57.86,
+        "memory": 1049.86,
+        "passed": true
+      }
+    },
+    {
+      "workload": "writes",
+      "level": 32,
+      "gowave": {
+        "rps": 1290.09,
+        "p50": 20.0,
+        "p99": 68.35,
+        "memory": 48.4,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 771.09,
+        "p50": 40.08,
+        "p99": 118.49,
+        "memory": 916.8,
+        "passed": true
+      }
+    },
+    {
+      "workload": "writes",
+      "level": 128,
+      "gowave": {
+        "rps": 1212.54,
+        "p50": 91.58,
+        "p99": 323.64,
+        "memory": 59.93,
+        "passed": true
+      },
+      "remnawave": {
+        "rps": 915.47,
+        "p50": 127.14,
+        "p99": 453.77,
+        "memory": 1042.99,
+        "passed": false
+      }
+    }
+  ],
+  "rate": [
+    {
+      "workload": "reads",
+      "level": 100,
+      "gowave": {
+        "p50": 1.01,
+        "p99": 3.12
+      },
+      "remnawave": {
+        "p50": 2.82,
+        "p99": 6.44
+      }
+    },
+    {
+      "workload": "reads",
+      "level": 500,
+      "gowave": {
+        "p50": 0.86,
+        "p99": 3.64
+      },
+      "remnawave": {
+        "p50": 2.71,
+        "p99": 9.49
+      }
+    },
+    {
+      "workload": "subscriptions",
+      "level": 100,
+      "gowave": {
+        "p50": 1.73,
+        "p99": 3.18
+      },
+      "remnawave": {
+        "p50": 2.59,
+        "p99": 3.68
+      }
+    },
+    {
+      "workload": "subscriptions",
+      "level": 500,
+      "gowave": {
+        "p50": 1.5,
+        "p99": 8.32
+      },
+      "remnawave": {
+        "p50": 4.13,
+        "p99": 158.41
+      }
+    }
+  ],
+  "startup": {
+    "gowave": 228,
+    "remnawave": 4823
+  },
+  "memory": {
+    "gowave": 51,
+    "remnawave": 1030
+  }
+}

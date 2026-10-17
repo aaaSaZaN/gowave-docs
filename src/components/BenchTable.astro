@@ -1,0 +1,105 @@
+---
+// Full benchmark tables, generated from src/data/benchmark-tables.json.
+import tables from '../data/benchmark-tables.json';
+
+interface Props {
+	lang: 'ru' | 'en';
+	kind: 'concurrency' | 'rate';
+}
+
+const { lang, kind } = Astro.props;
+const names: Record<string, { ru: string; en: string }> = {
+	reads: { ru: 'Чтение (смесь)', en: 'Reads (mix)' },
+	subscriptions: { ru: 'Подписки', en: 'Subscriptions' },
+	writes: { ru: 'Запись', en: 'Writes' },
+	mixed: { ru: 'Смешанная', en: 'Mixed' },
+	stats: { ru: 'Статистика', en: 'Dashboard stats' },
+	'user-list': { ru: 'Список пользователей', en: 'User list' },
+	'user-detail': { ru: 'Карточка пользователя', en: 'User detail' },
+};
+const order = ['reads', 'subscriptions', 'mixed', 'writes', 'user-list', 'user-detail', 'stats'];
+const number = (value: number, digits = 0) =>
+	new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(value);
+const rows = [...tables[kind]].sort(
+	(a, b) => order.indexOf(a.workload) - order.indexOf(b.workload) || a.level - b.level,
+);
+const text = {
+	ru: { workload: 'Нагрузка', clients: 'Клиенты', rate: 'Запросов/с', rps: 'запросов/с', ratio: 'GoWave / Remnawave', failed: 'не уложилась в SLO' },
+	en: { workload: 'Workload', clients: 'Clients', rate: 'Requests/s', rps: 'requests/s', ratio: 'GoWave / Remnawave', failed: 'SLO failed' },
+}[lang];
+---
+
+<div class="bench-table">
+	<table>
+		<thead>
+			{
+				kind === 'concurrency' ? (
+					<tr>
+						<th>{text.workload}</th>
+						<th>{text.clients}</th>
+						<th>GoWave, {text.rps}</th>
+						<th>p99, ms</th>
+						<th>Remnawave, {text.rps}</th>
+						<th>p99, ms</th>
+						<th>{text.ratio}</th>
+					</tr>
+				) : (
+					<tr>
+						<th>{text.workload}</th>
+						<th>{text.rate}</th>
+						<th>GoWave p50 / p99, ms</th>
+						<th>Remnawave p50 / p99, ms</th>
+					</tr>
+				)
+			}
+		</thead>
+		<tbody>
+			{
+				rows.map((row: any) =>
+					kind === 'concurrency' ? (
+						<tr>
+							<td>{names[row.workload][lang]}</td>
+							<td>{row.level}</td>
+							<td>{number(row.gowave.rps)}</td>
+							<td>{number(row.gowave.p99, 1)}</td>
+							<td>
+								{number(row.remnawave.rps)}
+								{!row.remnawave.passed && <span title={text.failed}> †</span>}
+							</td>
+							<td>{number(row.remnawave.p99, 1)}</td>
+							<td class:list={{ worse: row.gowave.rps < row.remnawave.rps }}>
+								{number(row.gowave.rps / row.remnawave.rps, 2)}×
+							</td>
+						</tr>
+					) : (
+						<tr>
+							<td>{names[row.workload][lang]}</td>
+							<td>{row.level}</td>
+							<td>
+								{number(row.gowave.p50, 1)} / {number(row.gowave.p99, 1)}
+							</td>
+							<td>
+								{number(row.remnawave.p50, 1)} / {number(row.remnawave.p99, 1)}
+							</td>
+						</tr>
+					),
+				)
+			}
+		</tbody>
+	</table>
+</div>
+
+<style>
+	.bench-table {
+		overflow-x: auto;
+	}
+	td,
+	th {
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+	.worse {
+		color: var(--sl-color-orange-high, #d97706);
+		font-weight: 600;
+	}
+</style>

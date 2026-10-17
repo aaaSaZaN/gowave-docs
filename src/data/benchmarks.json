@@ -1,0 +1,108 @@
+{
+  "note": {
+    "ru": "Docker, по 2 CPU и 2 ГиБ на панель, PostgreSQL 17 (1 CPU) у каждой, 1000 пользователей, 32 одновременных клиента. Медиана двух прогонов по 20 с. Remnawave 3.4.5.",
+    "en": "Docker, 2 CPU and 2 GiB per panel, PostgreSQL 17 (1 CPU) each, 1,000 users, 32 concurrent clients. Median of two 20 s runs. Remnawave 3.4.5."
+  },
+  "groups": [
+    {
+      "title": {
+        "ru": "Чтение API",
+        "en": "API reads"
+      },
+      "subtitle": {
+        "ru": "список, карточка, статистика, ноды",
+        "en": "list, detail, stats, nodes"
+      },
+      "unit": {
+        "ru": "запросов/с",
+        "en": "requests/s"
+      },
+      "higherIsBetter": true,
+      "rows": [
+        {
+          "label": "GoWave",
+          "value": 2295
+        },
+        {
+          "label": "Remnawave",
+          "value": 797
+        }
+      ]
+    },
+    {
+      "title": {
+        "ru": "Подписки",
+        "en": "Subscriptions"
+      },
+      "subtitle": {
+        "ru": "Xray JSON, Mihomo, sing-box",
+        "en": "Xray JSON, Mihomo, sing-box"
+      },
+      "unit": {
+        "ru": "запросов/с",
+        "en": "requests/s"
+      },
+      "higherIsBetter": true,
+      "rows": [
+        {
+          "label": "GoWave",
+          "value": 1108
+        },
+        {
+          "label": "Remnawave",
+          "value": 656
+        }
+      ]
+    },
+    {
+      "title": {
+        "ru": "Память под нагрузкой",
+        "en": "Memory under load"
+      },
+      "subtitle": {
+        "ru": "контейнер панели, медиана",
+        "en": "panel container, median"
+      },
+      "unit": {
+        "ru": "МиБ",
+        "en": "MiB"
+      },
+      "higherIsBetter": false,
+      "rows": [
+        {
+          "label": "GoWave",
+          "value": 51
+        },
+        {
+          "label": "Remnawave",
+          "value": 1030
+        }
+      ]
+    },
+    {
+      "title": {
+        "ru": "Запуск",
+        "en": "Startup"
+      },
+      "subtitle": {
+        "ru": "до первого ответа API",
+        "en": "until the API answers"
+      },
+      "unit": {
+        "ru": "мс",
+        "en": "ms"
+      },
+      "higherIsBetter": false,
+      "rows": [
+        {
+          "label": "GoWave",
+          "value": 228
+        },
+        {
+          "label": "Remnawave",
+          "value": 4823
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+---
+title: GoWave
+description: "The Remnawave backend in Go: 20× less memory, ready in 0.2 seconds, the same API."
+template: splash
+hero:
+  tagline: The Remnawave backend, rewritten in Go. The same API and web interface, with 20× less memory and several times the requests per second.
+  actions:
+    - text: Install
+      link: overview/quick-start/
+      icon: right-arrow
+    - text: Benchmarks
+      link: benchmarks/
+      variant: secondary
+    - text: GitHub
+      link: https://github.com/aaaSaZaN/gowave
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import BenchBars from '../../../components/BenchBars.astro';
+
+<BenchBars lang="en" />
+
+## Why GoWave
+
+<CardGrid>
+	<Card title="Lightweight" icon="rocket">
+		A single Go process: about 50 MiB of memory under load versus about 1 GiB for Remnawave. Ready to serve 0.2 seconds after start.
+	</Card>
+	<Card title="Compatible" icon="approve-check">
+		API per `@remnawave/backend-contract`, the Remnawave web interface, `remnawave/node` and the Go node, the subscription page.
+	</Card>
+	<Card title="SQLite or PostgreSQL" icon="seti:db">
+		A single SQLite file without Docker, or PostgreSQL in Docker. One command moves you from one to the other.
+	</Card>
+	<Card title="One-command install" icon="laptop">
+		The installer sets up HTTPS with Caddy or Nginx and moves your data from Remnawave or PasarGuard.
+	</Card>
+</CardGrid>
+
+```bash
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/install.sh)"
+```
