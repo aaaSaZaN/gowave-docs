@@ -13,7 +13,7 @@ The Go node ([remnanode-go](https://github.com/aaaSaZaN/remnanode-go)) manages t
 - Service manager: systemd, OpenRC (Alpine) or procd (OpenWrt).
 - `curl` or `wget`, and one of `sha256sum`, `shasum`, `openssl`.
 - Root access.
-- A separate server: running the node on the panel server is not supported, see the [panel requirements](../../requirements/).
+- A separate server: running the node on the panel server is not recommended, see the [panel requirements](../../requirements/).
 - Traffic filters in plugins need `nft`, `ss` (iproute2) and `CAP_NET_ADMIN`.
 
 ## Install

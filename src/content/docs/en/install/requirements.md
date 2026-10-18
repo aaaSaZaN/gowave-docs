@@ -31,4 +31,4 @@ The panel runs as a single process and takes about 50 MB under load, see [benchm
 | [Systemd and SQLite](../systemd/) | Only the panel; the database is a file next to it |
 | [Docker and PostgreSQL](../docker/) | The panel and PostgreSQL in containers. Under benchmark load PostgreSQL used about 140 MB |
 
-Nodes run on separate servers; their requirements are on the [Go node installation](../node/install/) page. Running the panel and a node on the same server is not supported: both want port 443, and both default to port `3000`. If you need it anyway, split the traffic yourself, for example with `ssl_preread` in Nginx; see the [basic example](../reverse-proxy/ssl-preread/).
+Nodes run on separate servers; their requirements are on the [Go node installation](../node/install/) page. Running the panel and a node on the same server is not recommended: both want port 443, and both default to port `3000`. If you need it anyway, split the traffic yourself, for example with `ssl_preread` in Nginx; see the [basic example](../reverse-proxy/ssl-preread/).

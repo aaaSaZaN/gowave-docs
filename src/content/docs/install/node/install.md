@@ -13,7 +13,7 @@ Go-нода ([remnanode-go](https://github.com/aaaSaZaN/remnanode-go)) упра�
 - Система запуска: systemd, OpenRC (Alpine) или procd (OpenWrt).
 - `curl` или `wget` и любой из `sha256sum`, `shasum`, `openssl`.
 - Доступ root.
-- Отдельный сервер: на одном сервере с панелью нода не поддерживается, см. [требования к панели](../../requirements/).
+- Отдельный сервер: ставить ноду на один сервер с панелью не рекомендуется, см. [требования к панели](../../requirements/).
 - Для фильтров трафика в плагинах нужны `nft`, `ss` (iproute2) и право `CAP_NET_ADMIN`.
 
 ## Установка

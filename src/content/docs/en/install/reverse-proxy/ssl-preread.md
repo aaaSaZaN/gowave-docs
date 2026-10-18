@@ -5,8 +5,8 @@ sidebar:
   order: 4
 ---
 
-:::caution[Not supported]
-Running the panel and a node on the same server is not officially supported, and the installers do not set it up. What follows is a tested starting point for a manual setup, not a finished solution. Anything you change from here is up to you.
+:::caution[Not recommended]
+Running the panel and a node on the same server is not recommended, and the installers do not set it up. What follows is a tested starting point for a manual setup, not a finished solution. Anything you change from here, and getting the setup right, is on you.
 :::
 
 The panel and Xray both need port 443. Nginx accepts the connection, reads the domain name from the TLS ClientHello (SNI) without decrypting anything, and uses it to decide where the connection goes:
@@ -31,33 +31,35 @@ Replace `panel.example.com` with the panel domain in every example.
 
   On Debian and Ubuntu the `stream` module is a separate package: `apt install libnginx-mod-stream`.
 - The panel on `127.0.0.1:3000`. In the [installer](../../installer/#your-own-reverse-proxy) pick "Не настраивать: свой reverse proxy" (use your own proxy), or install the panel [manually](../../systemd/).
-- Port 443 free: remove Caddy and the installer's `gowave.conf` site.
+- Ports 80 and 443 free.
 
 ## 1. Panel certificate
 
-Port 80 stays with the regular `http` Nginx, so the certificate is issued through webroot and renewals work without stopping Nginx. `/etc/nginx/conf.d/gowave-acme.conf`:
+Nginx does not listen on port 80 in this setup, so the port goes to certbot. In `--standalone` mode certbot starts a temporary server on port 80, passes the challenge, and releases the port right away. Port 80 must be open in the firewall.
 
-```nginx
-server {
-    listen 80;
-    listen [::]:80;
-    server_name panel.example.com;
+Check that port 80 is free. The output should contain nothing but the header line:
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/letsencrypt;
-    }
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
-}
+```bash
+ss -ltnp 'sport = :80'
 ```
 
 ```bash
-mkdir -p /var/www/letsencrypt
-nginx -t && systemctl reload nginx
-certbot certonly --webroot -w /var/www/letsencrypt -d panel.example.com
+certbot certonly --standalone -d panel.example.com
 ```
+
+The certificate lands in `/etc/letsencrypt/live/panel.example.com/` (`fullchain.pem` and `privkey.pem`), the paths used in step 3. The directory is named after the first `-d` domain.
+
+`certonly` only issues the certificate and leaves the Nginx configuration alone. Nginx has to be reloaded after a renewal, otherwise it keeps serving the old certificate from memory. Certbot runs the scripts in `renewal-hooks/deploy/` after every successful renewal:
+
+```bash
+cat > /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh <<'EOF'
+#!/bin/sh
+systemctl reload nginx
+EOF
+chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+```
+
+There is no `http://` to `https://` redirect here: `http://panel.example.com` does not open. If you would rather not open port 80 at all, issue the certificate through DNS-01: a certbot plugin for your DNS provider (for example `certbot-dns-cloudflare`) or acme.sh.
 
 ## 2. Routing by SNI
 
@@ -66,12 +68,9 @@ The `stream` block must sit at the top level of `nginx.conf`, next to `http`, no
 ```nginx
 stream {
     map $ssl_preread_server_name $sni_backend {
-        panel.example.com  panel;
-        default            xray;
+        panel.example.com  127.0.0.1:8443;
+        default            127.0.0.1:9443;
     }
-
-    upstream panel { server 127.0.0.1:8443; }
-    upstream xray  { server 127.0.0.1:9443; }
 
     server {
         listen 443;
@@ -96,13 +95,9 @@ Connections without SNI (scanners hitting the IP) fall into `default`, so they g
 `/etc/nginx/conf.d/gowave.conf`. The server listens only on `127.0.0.1:8443` and expects PROXY protocol from the `stream` block:
 
 ```nginx
-map $http_upgrade $connection_upgrade {
+map $http_upgrade $gowave_connection_upgrade {
     default upgrade;
     "" close;
-}
-
-upstream gowave {
-    server 127.0.0.1:3000;
 }
 
 server {
@@ -122,13 +117,13 @@ server {
 
     location / {
         proxy_http_version 1.1;
-        proxy_pass http://gowave;
+        proxy_pass http://127.0.0.1:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Connection $gowave_connection_upgrade;
     }
 }
 ```
@@ -141,10 +136,11 @@ Leave out the `listen 443 ... default_server` with `ssl_reject_handshake` from t
 
 ## 4. Node
 
-Port `3000` is taken by the panel, so the Go node needs another management port, for example `2222`:
+Port `3000` is taken by the panel, so the Go node needs another management port, for example `2222`. The installer is downloaded in full first, so you can read it before running it:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo NODE_PORT=2222 sh
+curl -fsSLo /tmp/remnanode-install.sh https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh
+sudo NODE_PORT=2222 sh /tmp/remnanode-install.sh
 ```
 
 In the panel, add the node with this server's IP and port `2222`.
@@ -190,8 +186,9 @@ In the host for this inbound set port **443**. Clients connect to Nginx; `9443` 
 - **The panel on `listen 443`.** The panel server must listen on `127.0.0.1:8443`. Port 443 belongs only to the `stream` block.
 - **Port `9443` in the host.** Clients cannot connect: only 443 is open from outside.
 - **The node on port `3000`.** The panel holds that port, and the node fails with `Address already in use`.
-- **A certificate issued with `--standalone`.** Renewal fails while Nginx holds port 80. Use webroot as in step 1.
+- **Port 80 in use.** `certbot --standalone` reports `Could not bind TCP port 80`. Usually the stock Nginx `default` site or a leftover `server` with `listen 80` holds it. Check with `ss -ltnp 'sport = :80'`.
+- **No Nginx reload hook.** `certbot renew` succeeds, but 90 days after issuance the panel starts serving an expired certificate.
 
 ## Subscription page on the same server
 
-Add its domain to the `map` with the same `panel` value, plus a separate `server` with `listen 127.0.0.1:8443 ssl proxy_protocol` and its own `server_name`. The page itself is covered in [Subscription page](../../subscription-page/).
+Issue a certificate for its domain with the same command as in step 1. Add the domain to the `map` with the same `127.0.0.1:8443` address, plus a separate `server` with `listen 127.0.0.1:8443 ssl proxy_protocol` and its own `server_name`. The page itself is covered in [Subscription page](../../subscription-page/).

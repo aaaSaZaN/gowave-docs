@@ -5,8 +5,8 @@ sidebar:
   order: 4
 ---
 
-:::caution[Не поддерживается]
-Панель и нода на одном сервере официально не поддерживаются, установщики так не ставят. Ниже - проверенная отправная точка для ручной настройки, а не готовое решение. Всё, что вы меняете дальше, остаётся на вас.
+:::caution[Не рекомендуется]
+Ставить панель и ноду на один сервер не рекомендуется, установщики так не ставят. Ниже - проверенная отправная точка для ручной настройки, а не готовое решение. Всё, что вы меняете дальше, и грамотность настройки остаются на вашей совести.
 :::
 
 Панели и Xray нужен один и тот же порт 443. Nginx принимает соединение, читает имя домена из TLS ClientHello (SNI) без расшифровки и по нему решает, куда отдать соединение:
@@ -31,33 +31,35 @@ sidebar:
 
   В Debian и Ubuntu модуль `stream` ставится отдельным пакетом: `apt install libnginx-mod-stream`.
 - Панель на `127.0.0.1:3000`. В [установщике](../../installer/#свой-reverse-proxy) выберите «Не настраивать: свой reverse proxy» или поставьте панель [вручную](../../systemd/).
-- Порт 443 свободен: Caddy и сайт `gowave.conf` от установщика удалите.
+- Порты 80 и 443 свободны.
 
 ## 1. Сертификат панели
 
-Порт 80 остаётся за обычным `http` Nginx, поэтому сертификат выпускается через webroot, и продление работает без остановки Nginx. Файл `/etc/nginx/conf.d/gowave-acme.conf`:
+Nginx в этой схеме не слушает порт 80, поэтому порт отдаётся certbot. В режиме `--standalone` certbot сам поднимает временный сервер на порту 80, проходит проверку и сразу освобождает порт. Порт 80 должен быть открыт в файрволе.
 
-```nginx
-server {
-    listen 80;
-    listen [::]:80;
-    server_name panel.example.com;
+Проверьте, что порт 80 свободен: кроме строки заголовка, вывод должен быть пустым.
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/letsencrypt;
-    }
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
-}
+```bash
+ss -ltnp 'sport = :80'
 ```
 
 ```bash
-mkdir -p /var/www/letsencrypt
-nginx -t && systemctl reload nginx
-certbot certonly --webroot -w /var/www/letsencrypt -d panel.example.com
+certbot certonly --standalone -d panel.example.com
 ```
+
+Сертификат ляжет в `/etc/letsencrypt/live/panel.example.com/` (`fullchain.pem` и `privkey.pem`), эти пути используются в шаге 3. Папка называется по первому домену из `-d`.
+
+`certonly` только выпускает сертификат и не трогает конфигурацию Nginx. После продления Nginx нужно перезагрузить, иначе он продолжит отдавать старый сертификат из памяти. Certbot запускает скрипты из `renewal-hooks/deploy/` после каждого успешного продления:
+
+```bash
+cat > /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh <<'EOF'
+#!/bin/sh
+systemctl reload nginx
+EOF
+chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+```
+
+Редиректа с `http://` на `https://` здесь нет: `http://panel.example.com` не откроется. Если не хотите открывать порт 80 вовсе, выпускайте сертификат через DNS-01: плагин certbot для вашего DNS-провайдера (например, `certbot-dns-cloudflare`) или acme.sh.
 
 ## 2. Разбор по SNI
 
@@ -66,12 +68,9 @@ certbot certonly --webroot -w /var/www/letsencrypt -d panel.example.com
 ```nginx
 stream {
     map $ssl_preread_server_name $sni_backend {
-        panel.example.com  panel;
-        default            xray;
+        panel.example.com  127.0.0.1:8443;
+        default            127.0.0.1:9443;
     }
-
-    upstream panel { server 127.0.0.1:8443; }
-    upstream xray  { server 127.0.0.1:9443; }
 
     server {
         listen 443;
@@ -96,13 +95,9 @@ include /etc/nginx/stream.conf;
 Файл `/etc/nginx/conf.d/gowave.conf`. Сервер слушает только `127.0.0.1:8443` и ждёт PROXY protocol от блока `stream`:
 
 ```nginx
-map $http_upgrade $connection_upgrade {
+map $http_upgrade $gowave_connection_upgrade {
     default upgrade;
     "" close;
-}
-
-upstream gowave {
-    server 127.0.0.1:3000;
 }
 
 server {
@@ -122,13 +117,13 @@ server {
 
     location / {
         proxy_http_version 1.1;
-        proxy_pass http://gowave;
+        proxy_pass http://127.0.0.1:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Connection $gowave_connection_upgrade;
     }
 }
 ```
@@ -141,10 +136,11 @@ nginx -t && systemctl reload nginx
 
 ## 4. Нода
 
-Порт `3000` уже занят панелью, поэтому Go-ноде нужен другой порт управления, например `2222`:
+Порт `3000` уже занят панелью, поэтому Go-ноде нужен другой порт управления, например `2222`. Установщик сначала скачивается целиком, его можно просмотреть перед запуском:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo NODE_PORT=2222 sh
+curl -fsSLo /tmp/remnanode-install.sh https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh
+sudo NODE_PORT=2222 sh /tmp/remnanode-install.sh
 ```
 
 В панели добавьте ноду с IP этого сервера и портом `2222`.
@@ -190,8 +186,9 @@ Xray слушает только `127.0.0.1:9443` и принимает PROXY pr
 - **Панель на `listen 443`.** Сервер панели должен слушать `127.0.0.1:8443`. Порт 443 принадлежит только блоку `stream`.
 - **В хосте порт `9443`.** Клиенты не смогут подключиться: снаружи открыт только 443.
 - **Нода на порту `3000`.** Порт занят панелью, нода не запустится с `Address already in use`.
-- **Сертификат через `--standalone`.** Продление не пройдёт, пока Nginx держит порт 80. Используйте webroot, как в первом шаге.
+- **Порт 80 занят.** `certbot --standalone` ответит `Could not bind TCP port 80`. Обычно его держит стандартный сайт Nginx `default` или оставшийся `server` с `listen 80`. Проверьте `ss -ltnp 'sport = :80'`.
+- **Нет хука перезагрузки Nginx.** `certbot renew` проходит успешно, но через 90 дней после выпуска панель начинает отдавать просроченный сертификат.
 
 ## Страница подписки на этом же сервере
 
-Добавьте её домен в `map` с тем же значением `panel` и отдельный `server` с `listen 127.0.0.1:8443 ssl proxy_protocol` и своим `server_name`. Сама страница описана в разделе [Страница подписки](../../subscription-page/).
+Выпустите для её домена сертификат той же командой из первого шага. Добавьте домен в `map` с тем же адресом `127.0.0.1:8443` и отдельный `server` с `listen 127.0.0.1:8443 ssl proxy_protocol` и своим `server_name`. Сама страница описана в разделе [Страница подписки](../../subscription-page/).
