@@ -12,8 +12,8 @@ GoWave replaces the Remnawave backend and keeps its API. The differences are in 
 | Language | Go | TypeScript (Node.js) |
 | Processes | One | Three: API, queue workers, scheduler |
 | Database | SQLite or PostgreSQL | PostgreSQL and Valkey (Redis) |
-| Memory under load | about 50 MB | about 1 GB |
-| API ready after start | 0.2 s | 4.8 s |
+| Memory under load | about 60 MB | about 1 GB |
+| API ready after start | 0.15 s | 4.3 s |
 | API | All 218 `@remnawave/backend-contract` 3.4.15 commands | Reference |
 | Web interface | The Remnawave interface | Its own |
 | Nodes | Go node and `remnawave/node` | `remnawave/node`; the Go node connects too |
