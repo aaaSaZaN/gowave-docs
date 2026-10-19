@@ -22,17 +22,17 @@ Go-нода ([remnanode-go](https://github.com/aaaSaZaN/remnanode-go)) упра�
 2. На сервере ноды выполните:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo sh
+   sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
    ```
 
-   Без `curl` подойдёт `wget -qO- <тот же адрес> | sudo sh`.
+   Без `curl` подойдёт `sudo sh -c "$(wget -qO- <тот же адрес>)"`.
 
 3. Установщик спросит `SECRET_KEY` и `NODE_PORT` (по умолчанию `3000`). Порт должен совпадать с портом ноды в панели.
 
 Без вопросов, например из скрипта:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo SECRET_KEY=... NODE_PORT=2222 sh
+sudo SECRET_KEY=... NODE_PORT=2222 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
 ```
 
 ## Что делает установщик
@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.
 Конкретную версию ставят так:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo REMNANODE_VERSION=v1.0.6 sh
+sudo REMNANODE_VERSION=v1.0.6 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
 ```
 
 Если такого тега нет, установщик завершится с ошибкой, не трогая службы.

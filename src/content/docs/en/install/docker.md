@@ -12,7 +12,8 @@ The panel image is published as `ghcr.io/aaasazan/gowave` for `linux/amd64` and 
 If Docker is not installed yet, use the official script. It installs Docker Engine and the `docker compose` plugin:
 
 ```bash
-curl -fsSL https://get.docker.com | sudo sh
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 ```
 
 :::note[Why "not for production"]

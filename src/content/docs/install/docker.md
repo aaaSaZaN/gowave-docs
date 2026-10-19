@@ -12,7 +12,8 @@ sidebar:
 Если Docker ещё не установлен, поставьте его официальным скриптом - он ставит Docker Engine и плагин `docker compose`:
 
 ```bash
-curl -fsSL https://get.docker.com | sudo sh
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 ```
 
 :::note[Почему «не для production»]

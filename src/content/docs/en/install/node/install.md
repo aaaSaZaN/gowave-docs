@@ -22,17 +22,17 @@ The Go node ([remnanode-go](https://github.com/aaaSaZaN/remnanode-go)) manages t
 2. On the node server run:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo sh
+   sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
    ```
 
-   Without `curl`, use `wget -qO- <same URL> | sudo sh`.
+   Without `curl`, use `sudo sh -c "$(wget -qO- <same URL>)"`.
 
 3. The installer asks for `SECRET_KEY` and `NODE_PORT` (default `3000`). The port must match the node port in the panel.
 
 Without prompts, for example from a script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo SECRET_KEY=... NODE_PORT=2222 sh
+sudo SECRET_KEY=... NODE_PORT=2222 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
 ```
 
 ## What the installer does
@@ -53,7 +53,7 @@ Running it again on a server with the Go node updates it and keeps `.env`. On a 
 To install a specific version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh | sudo REMNANODE_VERSION=v1.0.6 sh
+sudo REMNANODE_VERSION=v1.0.6 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
 ```
 
 If the tag does not exist, the installer fails without touching any service.
