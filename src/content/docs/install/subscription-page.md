@@ -24,7 +24,35 @@ GoWave совместим с официальным образом `remnawave/su
 
    И перезапустите панель: `docker compose up -d` (Docker) или `systemctl restart gowave` (systemd).
 
-2. Создайте `/opt/gowave-sub/docker-compose.yml`. Страница работает в сети хоста и обращается к панели напрямую по `127.0.0.1:3000`, мимо reverse proxy. Это одинаково работает для установки через Docker и через systemd: в обоих случаях панель слушает `127.0.0.1:3000` на хосте.
+2. Создайте `/opt/gowave-sub/docker-compose.yml`. Страница работает в обычной сети Docker, а её порт опубликован только на `127.0.0.1`: снаружи до неё не достучаться в обход reverse proxy, и правило файрвола не нужно. Как страница обращается к панели, зависит от способа установки панели.
+
+   **Панель в Docker.** Страница подключается к Docker-сети панели `gowave-network` и обращается к контейнеру панели напрямую по `http://gowave:3000`, мимо reverse proxy. Это та же схема, что у Remnawave с её `remnawave-network`:
+
+   ```yaml
+   services:
+     gowave-subscription-page:
+       image: remnawave/subscription-page:latest
+       container_name: gowave-subpage
+       hostname: gowave-subpage
+       restart: always
+       ports:
+         - "127.0.0.1:3010:3010"
+       environment:
+         - APP_PORT=3010
+         - REMNAWAVE_PANEL_URL=http://gowave:3000
+         - REMNAWAVE_API_TOKEN=ВАШ_API_ТОКЕН
+         - TRUST_PROXY=1
+       networks:
+         - gowave-network
+
+   networks:
+     gowave-network:
+       external: true
+   ```
+
+   Сначала запустите панель: сеть `gowave-network` появляется после `docker compose up -d` в `/opt/gowave-docker`. Если `docker network ls` её не показывает, `docker-compose.yml` панели скачан до появления этой сети: скачайте [актуальный](https://raw.githubusercontent.com/aaaSaZaN/gowave/main/docker-compose.yml) (или перенесите из него секции `networks`) и снова выполните `docker compose up -d`.
+
+   **Панель через systemd.** Панель слушает `127.0.0.1` хоста, а из контейнера этот адрес недоступен, поэтому страница обращается к панели через её домен:
 
    ```yaml
    services:
@@ -32,24 +60,19 @@ GoWave совместим с официальным образом `remnawave/su
        image: remnawave/subscription-page:latest
        container_name: gowave-subpage
        restart: always
-       network_mode: host
+       ports:
+         - "127.0.0.1:3010:3010"
        environment:
          - APP_PORT=3010
-         - REMNAWAVE_PANEL_URL=http://127.0.0.1:3000
+         - REMNAWAVE_PANEL_URL=https://panel.yourdomain.com
          - REMNAWAVE_API_TOKEN=ВАШ_API_ТОКЕН
          - TRUST_PROXY=1
    ```
 
-   В `REMNAWAVE_PANEL_URL` указывается адрес **панели**. `APP_PORT` задаёт порт самой страницы подписки.
+   В `REMNAWAVE_PANEL_URL` указывается адрес **панели**. `APP_PORT` задаёт порт самой страницы подписки. Если меняете `APP_PORT`, поменяйте порт и в `ports`, и в reverse proxy.
 
-   :::caution[Закройте порт из APP_PORT]
-   В сети хоста страница подписки слушает порт из `APP_PORT` на всех адресах сервера, включая внешний. Адрес для прослушивания в ней не настраивается, а привязка из `ports` в этом режиме не действует. Наружу должны быть открыты только 80 и 443. С `ufw` (подставьте свой `APP_PORT`, в примере это `3010`):
-
-   ```bash
-   ufw deny 3010/tcp
-   ```
-
-   Проверить можно с другого компьютера: `curl http://<IP сервера>:<APP_PORT>` не должен отвечать. Если меняете `APP_PORT`, закройте новый порт и поменяйте адрес в reverse proxy.
+   :::caution[Не используйте network_mode: host]
+   В сети хоста страница подписки слушает порт из `APP_PORT` на всех адресах сервера, включая внешний: адрес для прослушивания в ней не настраивается, а `ports` в этом режиме не действует. Без правила файрвола порт открыт в интернет по HTTP, а с `TRUST_PROXY=1` клиент, подключившийся напрямую, может подменить свой IP через `X-Forwarded-For`.
    :::
 
 3. Запустите: `cd /opt/gowave-sub && docker compose up -d`.
