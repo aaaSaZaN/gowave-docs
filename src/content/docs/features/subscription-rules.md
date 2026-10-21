@@ -93,7 +93,7 @@ sidebar:
 
 | Поле | Что делает |
 | :--- | :--- |
-| `headers` | Список заголовков `{ "key", "value" }`, которые добавятся к ответу |
+| `headers` | Список заголовков `{ "key", "value" }`, которые добавятся к ответу, см. [пример](#добавить-заголовок-для-клиента) |
 | `applyHeadersToEnd` | `false`: заголовки ставятся до формирования ответа, и стандартные заголовки подписки (`subscription-userinfo`, `content-disposition` и заданные в настройках) могут их перезаписать. `true`: заголовки ставятся последними и перезаписывают стандартные |
 | `subscriptionTemplate` | Имя шаблона подписки нужного типа вместо шаблона по умолчанию |
 | `ignoreHostXrayJsonTemplate` | Не использовать шаблоны Xray JSON, заданные у отдельных хостов, только общий |
@@ -175,6 +175,39 @@ sidebar:
   }
 }
 ```
+
+### Добавить заголовок для клиента
+
+Например, нужно передать приложению Happ заголовок `providerid` со своим идентификатором.
+
+Если правило для Happ уже есть в списке, создавать новое не нужно. Достаточно дописать блок `headers` в `responseModifications` этого правила:
+
+```json
+"headers": [
+  { "key": "providerid", "value": "12345" }
+]
+```
+
+Если правила для Happ ещё нет, создайте его целиком:
+
+```json
+{
+  "name": "Happ with ProviderID",
+  "enabled": true,
+  "operator": "AND",
+  "conditions": [
+    { "headerName": "user-agent", "operator": "STARTS_WITH", "value": "Happ/", "caseSensitive": false }
+  ],
+  "responseType": "XRAY_JSON",
+  "responseModifications": {
+    "headers": [
+      { "key": "providerid", "value": "12345" }
+    ]
+  }
+}
+```
+
+Если заголовок должен перезаписать стандартные системные заголовки панели (например `content-disposition`), добавьте рядом `"applyHeadersToEnd": true`. В значениях заголовков поддерживаются [переменные](../template-variables/).
 
 ### Свой шаблон для одного пользователя
 

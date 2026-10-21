@@ -93,7 +93,7 @@ The `responseModifications` object changes the response of the matched rule.
 
 | Field | What it does |
 | :--- | :--- |
-| `headers` | List of `{ "key", "value" }` headers added to the response |
+| `headers` | List of `{ "key", "value" }` headers added to the response, see [example](#add-a-header-for-a-client) |
 | `applyHeadersToEnd` | `false`: headers are set before the response is built, so the standard subscription headers (`subscription-userinfo`, `content-disposition` and those from settings) can overwrite them. `true`: headers are set last and overwrite the standard ones |
 | `subscriptionTemplate` | Name of a subscription template of the matching type to use instead of the default |
 | `ignoreHostXrayJsonTemplate` | Ignore per-host Xray JSON templates and use only the main one |
@@ -175,6 +175,39 @@ Needs "Show custom remarks" on.
   }
 }
 ```
+
+### Add a header for a client
+
+For example, to pass the `providerid` header to Happ.
+
+If a rule for Happ already exists in the list, no need to create a new one. Add the `headers` block inside `responseModifications` of that rule:
+
+```json
+"headers": [
+  { "key": "providerid", "value": "12345" }
+]
+```
+
+If there is no rule for Happ yet, create the whole rule:
+
+```json
+{
+  "name": "Happ with ProviderID",
+  "enabled": true,
+  "operator": "AND",
+  "conditions": [
+    { "headerName": "user-agent", "operator": "STARTS_WITH", "value": "Happ/", "caseSensitive": false }
+  ],
+  "responseType": "XRAY_JSON",
+  "responseModifications": {
+    "headers": [
+      { "key": "providerid", "value": "12345" }
+    ]
+  }
+}
+```
+
+If the header needs to override default subscription headers (such as `content-disposition`), add `"applyHeadersToEnd": true` alongside. Header values support [template variables](../template-variables/).
 
 ### A separate template for one user
 
