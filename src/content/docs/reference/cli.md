@@ -5,7 +5,13 @@ sidebar:
   order: 1
 ---
 
-При первом запуске от root бинарник регистрирует глобальную команду `gowave` (`/usr/local/bin/gowave`). В Docker команды выполняются внутри контейнера: `docker compose exec gowave /app/gowave <команда>`. После `gowave migrate to-docker` команда `gowave` на хосте сама перенаправляет вызовы в контейнер.
+Глобальную команду `gowave` (`/usr/local/bin/gowave`) создаёт установщик. При ручной установке создайте её сами: `ln -s /opt/gowave/gowave-server /usr/local/bin/gowave`. В Docker команды выполняются внутри контейнера: `docker compose exec gowave /app/gowave <команда>`. После `gowave migrate to-docker` команда `gowave` на хосте сама перенаправляет вызовы в контейнер.
+
+На systemd запускайте команды от пользователя службы из каталога панели, чтобы новые файлы базы принадлежали ему:
+
+```bash
+cd /opt/gowave && sudo -u gowave gowave rescue
+```
 
 ## Интерактивное меню
 
@@ -29,6 +35,7 @@ gowave rescue
 | `gowave migrate pg-to-sqlite [dsn] [файл]` | Перенос из PostgreSQL Remnawave в SQLite |
 | `gowave migrate to-docker` | Перевод установки с SQLite в Docker с PostgreSQL |
 | `gowave migrate sqlite-to-pg [файл] [dsn] [--force]` | Копирование данных из SQLite в уже запущенный PostgreSQL |
+| `gowave service install [каталог]` | От root: создаёт пользователя `gowave` и ограничения службы systemd, см. [Systemd и SQLite](../../install/systemd/#служба). Каталог по умолчанию `/opt/gowave` |
 
 Подробности о переносах - в разделе [Миграция](../../migration/remnawave/).
 

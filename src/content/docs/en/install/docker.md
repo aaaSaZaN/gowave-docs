@@ -39,6 +39,7 @@ The panel is published on `127.0.0.1:3000`. Next, set up a [reverse proxy](../re
 ## How the compose file works
 
 - **`gowave`** - the panel. The whole `.env` is passed to the container (`env_file`); the database connection and ports are set in the compose file and override `.env`.
+- The panel runs in the container as UID/GID `10001`, with no capabilities (`cap_drop: [ALL]`), `no-new-privileges` and a read-only root file system. The only writable place is a 128 MB `/tmp`. If you run the container as root (`user: root`), the panel refuses to start.
 - **`postgres`** - PostgreSQL 18 with the `postgres_data` volume mounted at `/var/lib/postgresql`. Its port is bound to `127.0.0.1` for backups and administration. Installs on PostgreSQL 17 are upgraded with a [separate guide](../../migration/postgres-18/).
 - Both containers are on the `gowave-network` Docker network, the panel with the hostname `gowave`. Other containers on this server, such as the [subscription page](../subscription-page/), join it and reach the panel at `http://gowave:3000`.
 - `APP_SECRET` and `POSTGRES_PASSWORD` are required: `docker compose` refuses to start without them.

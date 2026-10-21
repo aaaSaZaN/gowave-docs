@@ -7,9 +7,9 @@ sidebar:
 
 :::tip[The short version]
 - **CPU:** anything that runs Linux. Most of the time the panel just waits for requests.
-- **Memory:** about 50 MB. The browser tab showing this page takes more.
-- **Disk:** a 28 MB binary, the web interface and a database file. Fits where Docker would not.
-- **Patience:** 0.2 seconds to start. You might just manage to blink.
+- **Memory:** about 50 MB.
+- **Disk:** a 28 MB binary, the web interface and a database file.
+- **Patience:** 0.2 seconds to start.
 :::
 
 ## Server

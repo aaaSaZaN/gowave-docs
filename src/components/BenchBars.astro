@@ -10,6 +10,8 @@ interface Props {
 }
 
 const { lang, showLink = true } = Astro.props;
+// Absolute, so the link survives the landing page opened without its trailing slash.
+const benchmarksHref = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${lang === 'en' ? '/en' : ''}/benchmarks/`;
 const t = (text: { ru: string; en: string }) => text[lang];
 const format = (value: number) =>
 	new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { maximumFractionDigits: value < 10 ? 1 : 0 }).format(value);
@@ -56,7 +58,7 @@ const groups = data.groups.map((group) => {
 	</div>
 	<p class="bench-note">
 		{t(data.note)}{' '}
-		{showLink && <a href="benchmarks/">{lang === 'ru' ? 'Методика и все результаты →' : 'Methodology and full results →'}</a>}
+		{showLink && <a href={benchmarksHref}>{lang === 'ru' ? 'Методика и все результаты →' : 'Methodology and full results →'}</a>}
 	</p>
 </section>
 

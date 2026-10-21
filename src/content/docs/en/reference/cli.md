@@ -5,7 +5,13 @@ sidebar:
   order: 1
 ---
 
-When started as root for the first time, the binary registers the global `gowave` command (`/usr/local/bin/gowave`). In Docker, commands run inside the container: `docker compose exec gowave /app/gowave <command>`. After `gowave migrate to-docker`, the host `gowave` command forwards calls into the container automatically.
+The installer creates the global `gowave` command (`/usr/local/bin/gowave`). With a manual installation create it yourself: `ln -s /opt/gowave/gowave-server /usr/local/bin/gowave`. In Docker, commands run inside the container: `docker compose exec gowave /app/gowave <command>`. After `gowave migrate to-docker`, the host `gowave` command forwards calls into the container automatically.
+
+On systemd, run commands as the service user from the panel directory, so new database files belong to that user:
+
+```bash
+cd /opt/gowave && sudo -u gowave gowave rescue
+```
 
 ## Interactive menu
 
@@ -29,6 +35,7 @@ Reset and create administrators, run imports and migrations, all from a menu.
 | `gowave migrate pg-to-sqlite [dsn] [file]` | Move from Remnawave's PostgreSQL to SQLite |
 | `gowave migrate to-docker` | Move an SQLite installation to Docker with PostgreSQL |
 | `gowave migrate sqlite-to-pg [file] [dsn] [--force]` | Copy data from SQLite into a running PostgreSQL |
+| `gowave service install [directory]` | As root: creates the `gowave` user and the systemd service restrictions, see [Systemd and SQLite](../../install/systemd/#service). The directory defaults to `/opt/gowave` |
 
 See [Migration](../../migration/remnawave/) for details.
 

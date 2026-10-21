@@ -9,9 +9,9 @@ The panel checks GitHub releases and shows when a new version is out. Pre-releas
 
 ## Systemd and SQLite
 
-Click **Update panel** in the version window in the panel header. The panel downloads the new binary and web interface, replaces them and restarts.
+Click **Update panel** in the version window in the panel header. The panel downloads the new binary and web interface, replaces them and exits, and systemd starts it again (`Restart=always` in the [service restrictions](../systemd/#service-restrictions)).
 
-Or run the installer again. Its menu has an update option:
+Or run the installer again. Its menu has an update option, and it reapplies the service restrictions along the way:
 
 ```bash
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/install.sh)"

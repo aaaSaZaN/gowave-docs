@@ -1,0 +1,370 @@
+{
+  "tags": [
+    {
+      "name": "gowave",
+      "x-displayName": "GoWave extensions",
+      "description": "Endpoints GoWave adds on top of `@remnawave/backend-contract`. Remnawave clients and bots do not call them; the GoWave web interface does."
+    }
+  ],
+  "paths": {
+    "/api/sub/{shortUuid}": {
+      "get": {
+        "operationId": "GetSubscription",
+        "summary": "Get subscription",
+        "description": "Public subscription link, no token. The format is picked by the subscription response rules from `User-Agent` and other request headers: base64 links, Xray JSON, Mihomo, Stash, Clash or sing-box. A rule can also answer `403`, `404`, `451` or drop the connection. Traffic and expiry come in `subscription-userinfo`, the next traffic reset in `subscription-refill-date`; headers from the subscription settings and the matched rule are added on top. Served by the upstream backend too, but outside the contract package.",
+        "tags": ["sub"],
+        "security": [],
+        "parameters": [
+          { "name": "shortUuid", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription body. `Content-Type` depends on the client: `text/plain` for base64, `application/json` for Xray JSON and sing-box, `text/yaml` for Mihomo, Stash and Clash.",
+            "content": {
+              "text/plain": { "schema": { "type": "string" } },
+              "application/json": { "schema": { "type": "object" } },
+              "text/yaml": { "schema": { "type": "string" } }
+            }
+          },
+          "403": { "description": "No `User-Agent`, no matching rule, or the rule answers `BLOCK`." },
+          "404": { "description": "User not found, or the rule answers `STATUS_CODE_404`." },
+          "451": { "description": "The rule answers `STATUS_CODE_451`." }
+        }
+      }
+    },
+    "/api/sub/{shortUuid}/{clientType}": {
+      "get": {
+        "operationId": "GetSubscriptionByClientType",
+        "summary": "Get subscription for a client type",
+        "description": "Same as `GET /api/sub/{shortUuid}`, but the format comes from the path and the response rules are not checked. Any other `clientType` answers `403`. `disableSubscriptionAccessByPath: true` in the response rules settings turns these links off (`403`).",
+        "tags": ["sub"],
+        "security": [],
+        "parameters": [
+          { "name": "shortUuid", "in": "path", "required": true, "schema": { "type": "string" } },
+          {
+            "name": "clientType",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "enum": ["json", "v2ray-json", "mihomo", "stash", "clash", "singbox"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription body in the requested format.",
+            "content": {
+              "application/json": { "schema": { "type": "object" } },
+              "text/yaml": { "schema": { "type": "string" } }
+            }
+          },
+          "403": { "description": "Unknown client type, or links with a type in the path are disabled." },
+          "404": { "description": "User not found." }
+        }
+      }
+    },
+    "/api/nodes/traffic-summary": {
+      "get": {
+        "operationId": "GetNodesTrafficSummary",
+        "summary": "Get lifetime node traffic",
+        "description": "Raw bytes each node has served since it was added, summed from the usage history. Monthly resets of `trafficUsedBytes` do not clear it, and the node consumption multiplier is not applied. Nodes without recorded traffic are absent.",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["response"],
+                  "properties": {
+                    "response": {
+                      "type": "object",
+                      "required": ["nodes"],
+                      "properties": {
+                        "nodes": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": ["uuid", "lifetimeTrafficBytes"],
+                            "properties": {
+                              "uuid": { "type": "string", "format": "uuid" },
+                              "lifetimeTrafficBytes": { "type": "integer", "minimum": 0 }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/nodes/{uuid}/logs": {
+      "get": {
+        "operationId": "GetNodeLogs",
+        "summary": "Get node logs",
+        "description": "Last lines of the Xray or node log, read from the node. Works with the Go node; `remnawave/node` has no such endpoint. If the node cannot be reached, the response is still `200` with a single `[ERROR] ...` line.",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "uuid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["xray", "node"], "default": "xray" } },
+          { "name": "lines", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 500 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["response"],
+                  "properties": {
+                    "response": {
+                      "type": "object",
+                      "required": ["logs"],
+                      "properties": { "logs": { "type": "array", "items": { "type": "string" } } }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Node not found." }
+        }
+      }
+    },
+    "/api/nodes/{uuid}/updates": {
+      "get": {
+        "operationId": "GetNodeUpdates",
+        "summary": "Check node updates",
+        "description": "Asks a Go node for its versions and the releases it can install. Without `repo` the node lists `aaaSaZaN/remnanode-go` releases; pass `XTLS/Xray-core` for the core. If the node cannot fetch the releases, `response` holds only `error`.",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "uuid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "repo", "in": "query", "description": "GitHub repository, `owner/name`.", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["response"],
+                  "properties": {
+                    "response": {
+                      "type": "object",
+                      "properties": {
+                        "currentVersion": { "type": "string", "description": "Node version." },
+                        "currentCoreVersion": { "type": "string", "description": "Xray core version." },
+                        "architecture": { "type": "string" },
+                        "os": { "type": "string" },
+                        "latestRelease": { "$ref": "#/components/schemas/GoWaveNodeRelease" },
+                        "latestPrerelease": { "$ref": "#/components/schemas/GoWaveNodeRelease" },
+                        "allReleases": { "type": "array", "items": { "$ref": "#/components/schemas/GoWaveNodeRelease" } },
+                        "error": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Node not found." },
+          "502": { "description": "The node did not answer." }
+        }
+      }
+    },
+    "/api/nodes/{uuid}/updates/apply": {
+      "post": {
+        "operationId": "ApplyNodeUpdate",
+        "summary": "Update node or core",
+        "description": "Installs the given release of the Go node or its Xray core. The body goes to the node as is. The node checks the checksum, keeps the previous binary and restarts; the panel re-checks its health two seconds later.",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "uuid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type", "version"],
+                "properties": {
+                  "type": { "type": "string", "enum": ["node", "core"] },
+                  "version": { "type": "string", "description": "Release tag, as `tag_name` in `GET /api/nodes/{uuid}/updates`." },
+                  "repo": { "type": "string", "description": "Defaults to `aaaSaZaN/remnanode-go` for `node` and `XTLS/Xray-core` for `core`." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["response"],
+                  "properties": {
+                    "response": {
+                      "type": "object",
+                      "properties": { "success": { "type": "boolean" }, "version": { "type": "string" } }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid body." },
+          "404": { "description": "Node not found." },
+          "502": { "description": "The node refused the update or did not answer." }
+        }
+      }
+    },
+    "/api/system/updates/check": {
+      "get": {
+        "operationId": "CheckPanelUpdate",
+        "summary": "Check panel updates",
+        "description": "Compares the running version with the latest GoWave release on GitHub. The body is not wrapped in `response`. In Docker `canAutoUpdate` is `false` and `updateCommand` holds the command to run on the server.",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["currentVersion", "latestVersion", "changelog", "hasUpdate", "isDocker", "canAutoUpdate"],
+                  "properties": {
+                    "currentVersion": { "type": "string" },
+                    "latestVersion": { "type": "string" },
+                    "changelog": { "type": "string", "description": "Release notes in Markdown." },
+                    "hasUpdate": { "type": "boolean" },
+                    "isDocker": { "type": "boolean" },
+                    "canAutoUpdate": { "type": "boolean" },
+                    "updateCommand": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "502": { "description": "GitHub did not answer. The body is plain text." }
+        }
+      }
+    },
+    "/api/system/updates/apply": {
+      "post": {
+        "operationId": "ApplyPanelUpdate",
+        "summary": "Update the panel",
+        "description": "Systemd installs only. Downloads the latest release binary and web interface, replaces them and exits two seconds after answering; systemd starts the new version (`Restart=always`).",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Files replaced, the panel is restarting.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object", "properties": { "success": { "type": "boolean" } } }
+              }
+            }
+          },
+          "400": { "description": "Running in Docker. The body is plain text with the update command." },
+          "500": { "description": "Download or replacement failed; the old version keeps running. The body is plain text." }
+        }
+      }
+    },
+    "/api/system/actions/restore": {
+      "post": {
+        "operationId": "RestoreBackup",
+        "summary": "Restore from backup",
+        "description": "Replaces the panel data with a backup: a `.tar.gz` archive with a `*.sql.gz` PostgreSQL dump inside, as Remnawave makes them. The dump is loaded into a staging database first, so a broken backup leaves the live data untouched.",
+        "tags": ["gowave"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": { "file": { "type": "string", "format": "binary" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["response"],
+                  "properties": {
+                    "response": { "type": "object", "properties": { "message": { "type": "string" } } }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "No file, or the backup could not be restored." }
+        }
+      }
+    },
+    "/api/node-ssh/ws": {
+      "get": {
+        "operationId": "NodeSshSocket",
+        "summary": "Node SSH terminal (WebSocket)",
+        "description": "WebSocket for the node SSH terminal. First get a ticket with `POST /api/node-ssh/{uuid}/ticket`: it lives 15 seconds, works once and only from the same client IP. Then open the socket with `Sec-WebSocket-Protocol: rw, <ticket>, <admin JWT>`. API tokens are rejected; the socket needs an administrator session.",
+        "tags": ["node-ssh"],
+        "security": [],
+        "parameters": [
+          {
+            "name": "Sec-WebSocket-Protocol",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "example": "rw, <ticket>, <jwt>" }
+          }
+        ],
+        "responses": {
+          "101": { "description": "Switching to WebSocket." },
+          "401": { "description": "Missing, expired or foreign ticket." },
+          "403": { "description": "Not an administrator, for example an API token." }
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoWaveNodeRelease": {
+      "type": "object",
+      "properties": {
+        "tag_name": { "type": "string" },
+        "name": { "type": "string" },
+        "prerelease": { "type": "boolean" },
+        "published_at": { "type": "string", "format": "date-time" },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "digest": { "type": "string" },
+              "browser_download_url": { "type": "string" },
+              "size": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

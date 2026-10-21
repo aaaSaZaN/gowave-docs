@@ -30,7 +30,7 @@ Replace `panel.example.com` with the panel domain in every example.
   ```
 
   On Debian and Ubuntu the `stream` module is a separate package: `apt install libnginx-mod-stream`.
-- The panel on `127.0.0.1:3000`. In the [installer](../../installer/#your-own-reverse-proxy) pick "Не настраивать: свой reverse proxy" (use your own proxy), or install the panel [manually](../../systemd/).
+- The panel on `127.0.0.1:3000`. In the [installer](../../installer/#your-own-reverse-proxy) pick "Skip: I will use my own reverse proxy", or install the panel [manually](../../systemd/).
 - Ports 80 and 443 free.
 
 ## 1. Panel certificate
