@@ -9,7 +9,9 @@ The panel checks GitHub releases and shows when a new version is out. Pre-releas
 
 ## Systemd and SQLite
 
-Click **Update panel** in the version window in the panel header. The panel downloads the new binary and web interface, replaces them and exits, and systemd starts it again (`Restart=always` in the [service restrictions](../systemd/#service-restrictions)).
+Click **Update panel** in the version window in the panel header. The panel runs without root and cannot replace its own files, so it only leaves a request. A separate root service, `gowave-update`, downloads the latest release, checks it against `SHA256SUMS`, installs it and restarts the panel. The update takes up to a minute.
+
+On installs made before this service existed, the panel shows the installer command instead of the button. After one update with the installer, the button works.
 
 Or run the installer again. Its menu has an update option, and it reapplies the service restrictions along the way:
 

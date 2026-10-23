@@ -69,6 +69,10 @@ Settings are read from `.env` in the working directory (and `../.env`) or from t
 | `TELEGRAM_NOTIFY_CRM` | Chat for CRM events |
 | `TELEGRAM_NOTIFY_TBLOCKER` | Chat for Torrent Blocker |
 
+A chat set to `change_me` counts as not configured. The "View user" button in Torrent Blocker reports points to `PANEL_DOMAIN` with `PANEL_BASE_PATH` and is omitted for local domains. A failed login sends only the length of the typed password to Telegram, never the password itself.
+
+Notification settings of the old panel are copied during migration. On an existing GoWave install, use the installer menu item "Copy Telegram and webhook notifications from the old panel".
+
 ### Threshold notifications
 
 Lists are JSON number arrays such as `[60, 80, 95]` and only apply when their flag is on:

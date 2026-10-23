@@ -80,3 +80,5 @@ server {
 ```bash
 nginx -t && systemctl reload nginx
 ```
+
+`application/wasm` in `gzip_types` covers the Xray validator in the profile editor: Xray-core compiled to WebAssembly (~60 MB). It is downloaded and run only in the administrator's browser when the editor opens; the server does not keep it in memory. The panel already sends it compressed (~12 MB), and Nginx does not compress such responses again.

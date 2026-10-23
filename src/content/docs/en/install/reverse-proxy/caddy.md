@@ -17,3 +17,5 @@ panel.yourdomain.com {
 ```bash
 systemctl reload caddy
 ```
+
+`encode` also compresses `application/wasm` (Caddy 2.7+). The panel already sends the Xray validator for the profile editor (~60 MB of WebAssembly) compressed, about 12 MB. It is downloaded and run only in the administrator's browser.

@@ -115,6 +115,13 @@ server {
 
     client_max_body_size 50M;
 
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_min_length 256;
+    gzip_types application/javascript application/json application/wasm image/svg+xml text/css text/plain;
+
     location / {
         proxy_http_version 1.1;
         proxy_pass http://127.0.0.1:3000;

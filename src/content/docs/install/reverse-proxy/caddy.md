@@ -17,3 +17,5 @@ panel.yourdomain.com {
 ```bash
 systemctl reload caddy
 ```
+
+`encode` сжимает и `application/wasm` (Caddy 2.7+). Валидатор Xray в редакторе профилей (~60 МБ WebAssembly) панель и так отдаёт сжатым, около 12 МБ. Он скачивается и работает только в браузере администратора.
