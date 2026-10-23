@@ -115,7 +115,11 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 
 The service can write only to `/opt/gowave`, `/run/gowave` and its own private `/tmp`. The rest of the file system is read-only for it, and `/home` and `/root` are not visible at all. The one privilege left is `CAP_NET_BIND_SERVICE`, so `APP_PORT` can be below 1024 if you set it that way.
 
-`DynamicUser` is off on purpose. The SQLite file and the binary must belong to a stable user, or an update from the panel could not replace the binary. An update replaces the files and exits, and systemd starts the panel again because of `Restart=always`.
+`DynamicUser` is off on purpose: the SQLite files must belong to a stable user.
+
+The panel code is owned by root. The service account cannot change `gowave-server` or `frontend/`, so a compromised panel cannot plant a binary that root later runs (the installer, `gowave rescue` via `sudo`). `/opt/gowave` is `root:gowave` with the sticky bit: the panel creates its database files there but cannot replace or remove root's files. `.env` is read-only for the panel.
+
+Updates from the panel run in a separate root service. The panel leaves a request in `/run/gowave`, `gowave-update.path` starts `gowave-update.service`, which downloads the release, checks it against `SHA256SUMS`, installs it and restarts the panel.
 
 If the panel needs to write somewhere else, say a separate backup directory, add an override of your own. `90-unprivileged.conf` is rewritten by every `service install` and every update through the installer, so do not edit it:
 
