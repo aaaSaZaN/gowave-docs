@@ -15,7 +15,7 @@ A Linux server, a domain with an A record pointing to it, and root access. See [
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/install.sh)"
 ```
 
-The installer asks for the database, the domain and the reverse proxy, then sets up HTTPS. Its questions and the manual installation are described on the [installer](../../install/installer/) page.
+The installer asks for the database, the domain and the reverse proxy, then sets up HTTPS. For a manual installation, see [Systemd and SQLite](../../install/systemd/) or [Docker Compose and PostgreSQL](../../install/docker/).
 
 ## Step 2. Administrator
 

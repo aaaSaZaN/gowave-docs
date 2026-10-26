@@ -15,7 +15,7 @@ sidebar:
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/install.sh)"
 ```
 
-Установщик спросит базу данных, домен и reverse proxy, а потом сам настроит HTTPS. Вопросы установщика и ручная установка описаны на странице [установщика](../../install/installer/).
+Установщик спросит базу данных, домен и reverse proxy, а потом сам настроит HTTPS. Для ручной установки используйте [Systemd и SQLite](../../install/systemd/) или [Docker Compose и PostgreSQL](../../install/docker/).
 
 ## Шаг 2. Администратор
 

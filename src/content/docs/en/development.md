@@ -12,13 +12,19 @@ Repository: [aaaSaZaN/gowave](https://github.com/aaaSaZaN/gowave).
 
 ## Binaries
 
+Use the Bun version from `frontend/package.json` (`packageManager`) and the Go version from `backend-go/go.mod`.
+
 ```bash
 git clone https://github.com/aaaSaZaN/gowave.git
 cd gowave
 
 # Web interface
-pnpm --prefix frontend install --frozen-lockfile
-pnpm --prefix frontend build
+cd frontend
+bun install --frozen-lockfile
+bun run editor:download
+bun run build
+bun run editor:compress
+cd ..
 
 # Backend
 cd backend-go

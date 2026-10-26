@@ -26,14 +26,13 @@ export default defineConfig({
 				{
 					label: 'Обзор',
 					translations: { en: 'Overview' },
-					items: ['overview/quick-start', 'overview/components', 'overview/comparison'],
+					items: ['overview/quick-start', 'overview/comparison'],
 				},
 				{
 					label: 'Установка',
 					translations: { en: 'Install' },
 					items: [
 						'install/requirements',
-						'install/installer',
 						'install/docker',
 						'install/systemd',
 						{
@@ -62,7 +61,7 @@ export default defineConfig({
 				{
 					label: 'Справочник',
 					translations: { en: 'Reference' },
-					items: ['reference/cli', 'reference/environment', 'reference/compatibility'],
+					items: ['reference/cli', 'reference/environment'],
 				},
 				{
 					label: 'Ещё',

@@ -34,11 +34,6 @@ gowave rescue
 | `gowave import pasarguard [путь\|dsn]` | Импорт из PasarGuard |
 | `gowave migrate pg-to-sqlite [dsn] [файл]` | Перенос из PostgreSQL Remnawave в SQLite |
 | `gowave migrate to-docker` | Перевод установки с SQLite в Docker с PostgreSQL |
-| `gowave migrate sqlite-to-pg [файл] [dsn] [--force]` | Копирование данных из SQLite в уже запущенный PostgreSQL |
 | `gowave service install [каталог]` | От root: создаёт пользователя `gowave` и ограничения службы systemd, см. [Systemd и SQLite](../../install/systemd/#служба). Каталог по умолчанию `/opt/gowave` |
 
 Подробности о переносах - в разделе [Миграция](../../migration/remnawave/).
-
-## `sqlite-to-pg`
-
-Низкоуровневая команда копирования, на ней построен `to-docker`. Перед копированием она проверяет SQLite на битые ссылки между таблицами и не трогает PostgreSQL, где уже есть пользователи, ноды или хосты. С флагом `--force` такая база будет перезаписана. Копирование идёт в одной транзакции и не требует прав суперпользователя PostgreSQL.

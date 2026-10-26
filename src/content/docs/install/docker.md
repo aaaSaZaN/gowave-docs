@@ -9,16 +9,57 @@ sidebar:
 
 ## Docker
 
-Если Docker ещё не установлен, поставьте его официальным скриптом - он ставит Docker Engine и плагин `docker compose`:
+Выполняйте команды ниже от root. Если уже установлены неофициальные пакеты Docker или конфликтующие `containerd`/`runc`, удалите конфликтующие пакеты по инструкции для своего дистрибутива.
+
+### Debian / Ubuntu
+
+Добавьте ключ подписи и APT-репозиторий Docker, затем установите Engine и плагин Compose. Команды используют `ID` и кодовое имя выпуска из `/etc/os-release` и предназначены для Debian и Ubuntu:
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+apt update
+apt install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+
+. /etc/os-release
+curl -fsSL "https://download.docker.com/linux/${ID}/gpg" -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+cat > /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/${ID}
+Suites: ${UBUNTU_CODENAME:-$VERSION_CODENAME}
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+apt update
+apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-:::note[Почему «не для production»]
-Docker называет этот скрипт *convenience script*: он ставит последнюю версию без выбора, ничего не спрашивает и не предназначен для обновления уже установленного Docker. Для одного VPS с панелью это нормальный способ - скрипт подключает официальный репозиторий Docker, и дальше Docker обновляется вместе с системой (`apt upgrade`). Запускайте его один раз на чистом сервере. Если нужна закреплённая версия, используйте [установку из репозитория](https://docs.docker.com/engine/install/).
-:::
+Официальные инструкции: [Debian](https://docs.docker.com/engine/install/debian/), [Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
+
+### RHEL-like
+
+Для RHEL 8/9/10 добавьте DNF-репозиторий Docker и установите пакеты:
+
+```bash
+dnf install dnf-plugins-core
+dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Для CentOS Stream и совместимых дистрибутивов, например AlmaLinux и Rocky Linux, замените `linux/rhel/docker-ce.repo` на `linux/centos/docker-ce.repo` в команде добавления репозитория. Официальные инструкции: [RHEL](https://docs.docker.com/engine/install/rhel/), [CentOS](https://docs.docker.com/engine/install/centos/).
+
+### Запуск и проверка
+
+После установки любым из способов:
+
+```bash
+systemctl enable --now docker
+docker run --rm hello-world
+docker compose version
+```
 
 ## Установка
 
@@ -35,15 +76,6 @@ docker compose up -d
 ```
 
 Панель публикуется на `127.0.0.1:3000`. Дальше настройте [reverse proxy](../reverse-proxy/overview/).
-
-## Как устроен compose
-
-- **`gowave`** - панель. Весь `.env` передаётся в контейнер (`env_file`), а подключение к базе и порты задаются в самом compose и переопределяют `.env`.
-- Панель работает в контейнере от UID/GID `10001`, без capabilities (`cap_drop: [ALL]`), с `no-new-privileges` и корневой файловой системой только на чтение. Писать она может только во временный `/tmp` на 128 МБ. Если запустить контейнер от root (`user: root`), панель откажется стартовать.
-- **`postgres`** - PostgreSQL 18 с томом `postgres_data`, смонтированным в `/var/lib/postgresql`. Порт открыт только на `127.0.0.1` для резервных копий и администрирования. Установки на PostgreSQL 17 обновляются по [отдельной инструкции](../../migration/postgres-18/).
-- Оба контейнера находятся в Docker-сети `gowave-network`, панель с именем хоста `gowave`. Другие контейнеры на этом сервере, например [страница подписки](../subscription-page/), подключаются к ней и обращаются к панели по `http://gowave:3000`.
-- `APP_SECRET` и `POSTGRES_PASSWORD` обязательны: без них `docker compose` откажется запускаться.
-- Метрики (`3001`) доступны только с `127.0.0.1`; задайте `METRICS_USER` и `METRICS_PASS`, чтобы их собирать.
 
 ## Обновление и CLI
 

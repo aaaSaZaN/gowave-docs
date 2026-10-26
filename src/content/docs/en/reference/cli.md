@@ -34,11 +34,6 @@ Reset and create administrators, run imports and migrations, all from a menu.
 | `gowave import pasarguard [path\|dsn]` | Import from PasarGuard |
 | `gowave migrate pg-to-sqlite [dsn] [file]` | Move from Remnawave's PostgreSQL to SQLite |
 | `gowave migrate to-docker` | Move an SQLite installation to Docker with PostgreSQL |
-| `gowave migrate sqlite-to-pg [file] [dsn] [--force]` | Copy data from SQLite into a running PostgreSQL |
 | `gowave service install [directory]` | As root: creates the `gowave` user and the systemd service restrictions, see [Systemd and SQLite](../../install/systemd/#service). The directory defaults to `/opt/gowave` |
 
 See [Migration](../../migration/remnawave/) for details.
-
-## `sqlite-to-pg`
-
-The low-level copy command that `to-docker` is built on. Before copying it checks SQLite for broken references between tables and refuses to overwrite a PostgreSQL database that already has users, nodes or hosts; `--force` allows it. The copy runs in a single transaction and does not need PostgreSQL superuser rights.

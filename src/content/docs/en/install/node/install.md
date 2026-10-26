@@ -13,7 +13,6 @@ The Go node ([remnanode-go](https://github.com/aaaSaZaN/remnanode-go)) manages t
 - Service manager: systemd, OpenRC (Alpine) or procd (OpenWrt).
 - `curl` or `wget`, and one of `sha256sum`, `shasum`, `openssl`.
 - Root access.
-- A separate server: running the node on the panel server is not recommended, see the [panel requirements](../../requirements/).
 - Traffic filters in plugins need `nft`, `ss` (iproute2) and `CAP_NET_ADMIN`.
 
 ## Install
@@ -34,29 +33,6 @@ Without prompts, for example from a script:
 ```bash
 sudo SECRET_KEY=... NODE_PORT=2222 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
 ```
-
-## What the installer does
-
-- detects the architecture and service manager (override with `REMNANODE_INIT=systemd|openrc|procd`);
-- downloads the node and verifies checksums, along with the ASN index for plugins and `geocheck` (on `amd64` and `arm64`);
-- installs the latest stable Xray with `remnanode core install` and verifies its checksum;
-- creates the service and starts the node.
-
-Everything is downloaded and verified before the installer changes anything on the server. On failure it restores the previous state.
-
-After starting, the node waits for the panel to send its configuration. If the panel has not configured the node yet, the installer says so and the node stays installed: make sure it is added in the panel and run `remnanode status`.
-
-## The same command updates and migrates
-
-Running it again on a server with the Go node updates it and keeps `.env`. On a server with a `remnawave/node` Docker container it moves that container to the Go node, see [Docker node to Go node](../../../migration/docker-node/).
-
-To install a specific version:
-
-```bash
-sudo REMNANODE_VERSION=v1.0.6 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
-```
-
-If the tag does not exist, the installer fails without touching any service.
 
 ## Manual installation
 

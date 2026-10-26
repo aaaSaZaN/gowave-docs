@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-The [installer](../../install/installer/) detects Remnawave and PasarGuard and offers to move their data. The commands below are for running it manually. Source databases are only ever read.
+The [installer](../../overview/quick-start/) detects Remnawave and PasarGuard and offers to move their data. The commands below are for running it manually. Source databases are only ever read.
 
 ```bash
 # Find the database automatically

@@ -9,16 +9,57 @@ The panel image is published as `ghcr.io/aaasazan/gowave` for `linux/amd64` and 
 
 ## Docker
 
-If Docker is not installed yet, use the official script. It installs Docker Engine and the `docker compose` plugin:
+Run the commands below as root. If unofficial Docker packages or a conflicting `containerd`/`runc` are installed, remove the conflicting packages as described in the instructions for your distribution.
+
+### Debian / Ubuntu
+
+Add Docker's signing key and APT repository, then install Engine and the Compose plugin. The commands use `ID` and the release codename from `/etc/os-release` and are intended for Debian and Ubuntu:
 
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+apt update
+apt install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+
+. /etc/os-release
+curl -fsSL "https://download.docker.com/linux/${ID}/gpg" -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+cat > /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/${ID}
+Suites: ${UBUNTU_CODENAME:-$VERSION_CODENAME}
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+apt update
+apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-:::note[Why "not for production"]
-Docker calls this the *convenience script*: it installs the latest version without asking and is not meant to upgrade an existing installation. For a single panel VPS it is fine: it adds Docker's official repository, so Docker then updates with the system (`apt upgrade`). Run it once on a clean server. For a pinned version use the [repository installation](https://docs.docker.com/engine/install/).
-:::
+Official instructions: [Debian](https://docs.docker.com/engine/install/debian/), [Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
+
+### RHEL-like
+
+For RHEL 8/9/10, add Docker's DNF repository and install the packages:
+
+```bash
+dnf install dnf-plugins-core
+dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+For CentOS Stream and compatible distributions such as AlmaLinux and Rocky Linux, replace `linux/rhel/docker-ce.repo` with `linux/centos/docker-ce.repo` in the repository command. Official instructions: [RHEL](https://docs.docker.com/engine/install/rhel/), [CentOS](https://docs.docker.com/engine/install/centos/).
+
+### Start and verify
+
+For either package manager:
+
+```bash
+systemctl enable --now docker
+docker run --rm hello-world
+docker compose version
+```
 
 ## Install
 
@@ -35,15 +76,6 @@ docker compose up -d
 ```
 
 The panel is published on `127.0.0.1:3000`. Next, set up a [reverse proxy](../reverse-proxy/overview/).
-
-## How the compose file works
-
-- **`gowave`** - the panel. The whole `.env` is passed to the container (`env_file`); the database connection and ports are set in the compose file and override `.env`.
-- The panel runs in the container as UID/GID `10001`, with no capabilities (`cap_drop: [ALL]`), `no-new-privileges` and a read-only root file system. The only writable place is a 128 MB `/tmp`. If you run the container as root (`user: root`), the panel refuses to start.
-- **`postgres`** - PostgreSQL 18 with the `postgres_data` volume mounted at `/var/lib/postgresql`. Its port is bound to `127.0.0.1` for backups and administration. Installs on PostgreSQL 17 are upgraded with a [separate guide](../../migration/postgres-18/).
-- Both containers are on the `gowave-network` Docker network, the panel with the hostname `gowave`. Other containers on this server, such as the [subscription page](../subscription-page/), join it and reach the panel at `http://gowave:3000`.
-- `APP_SECRET` and `POSTGRES_PASSWORD` are required: `docker compose` refuses to start without them.
-- Metrics (`3001`) are reachable from `127.0.0.1` only; set `METRICS_USER` and `METRICS_PASS` to scrape them.
 
 ## Updates and CLI
 

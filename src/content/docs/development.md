@@ -12,13 +12,19 @@ sidebar:
 
 ## Бинарники
 
+Используйте версию Bun из `frontend/package.json` (`packageManager`) и версию Go из `backend-go/go.mod`.
+
 ```bash
 git clone https://github.com/aaaSaZaN/gowave.git
 cd gowave
 
 # Веб-интерфейс
-pnpm --prefix frontend install --frozen-lockfile
-pnpm --prefix frontend build
+cd frontend
+bun install --frozen-lockfile
+bun run editor:download
+bun run build
+bun run editor:compress
+cd ..
 
 # Бэкенд
 cd backend-go
