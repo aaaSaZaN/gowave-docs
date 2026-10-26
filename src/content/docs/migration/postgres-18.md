@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-Новые установки в Docker ставятся с PostgreSQL 18. Установки, сделанные раньше, остаются на PostgreSQL 17: `docker compose pull` не меняет compose-файл, а вместе с ним и версию базы. PostgreSQL 17 поддерживается до ноября 2029 года, так что обновляться не обязательно.
+Новые установки в Docker ставятся со стандартным образом `postgres:18`. Установки, сделанные раньше, остаются на PostgreSQL 17: `docker compose pull` не меняет compose-файл, а вместе с ним и версию базы. PostgreSQL 17 поддерживается до ноября 2029 года, так что обновляться не обязательно.
 
 ## Что изменилось в образе
 
@@ -45,22 +45,18 @@ docker compose down
 
 docker run --rm --env-file pg-upgrade.env -e PGAUTO_ONESHOT=yes \
   -v gowave_postgres_data:/var/lib/postgresql \
-  pgautoupgrade/pgautoupgrade:18-alpine
+  pgautoupgrade/pgautoupgrade:18-debian
 rm pg-upgrade.env
 ```
 
 В конце должна появиться строка `Upgrade to PostgreSQL 18.x complete.` и сообщение о выходе в режиме one shot. Затем поменяйте образ и путь тома в compose и запустите проект:
 
 ```bash
-sed -i 's#image: postgres:17-alpine#image: postgres:18-alpine#; s#- postgres_data:/var/lib/postgresql/data#- postgres_data:/var/lib/postgresql#' docker-compose.yml
+sed -i 's#image: postgres:17.*#image: postgres:18#; s#- postgres_data:/var/lib/postgresql/data#- postgres_data:/var/lib/postgresql#' docker-compose.yml
 docker compose up -d
 ```
 
 Без `pg-upgrade.env` ничего не выйдет: pgautoupgrade подключается под пользователем из `POSTGRES_USER` к базе из `POSTGRES_DB`. Если их не передать, он ищет пользователя `postgres` и останавливается посередине, оставив том в состоянии, которое повторный запуск уже не исправит.
-
-:::note[Почему alpine]
-GoWave использует alpine-образ PostgreSQL, поэтому и pgautoupgrade берётся в варианте `-alpine`. В инструкциях для Remnawave встречается `18-trixie`: там исходная база создана на Debian. Если сменить alpine на Debian, сменится и C-библиотека (musl на glibc), а с ней порядок сортировки строк в индексах.
-:::
 
 ## Способ 2. Дамп и восстановление
 
@@ -69,7 +65,7 @@ cd /opt/gowave-docker
 docker compose down
 docker volume rm gowave_postgres_data   # удаляет базу 17, копия уже в gowave-pg17.sql
 
-sed -i 's#image: postgres:17-alpine#image: postgres:18-alpine#; s#- postgres_data:/var/lib/postgresql/data#- postgres_data:/var/lib/postgresql#' docker-compose.yml
+sed -i 's#image: postgres:17.*#image: postgres:18#; s#- postgres_data:/var/lib/postgresql/data#- postgres_data:/var/lib/postgresql#' docker-compose.yml
 
 # Сначала только PostgreSQL: панель не должна создать пустую схему раньше восстановления
 docker compose up -d postgres
