@@ -1,0 +1,20 @@
+---
+import { descriptionParts } from '../lib/openapi';
+
+interface Props {
+	text: string;
+}
+const { text } = Astro.props;
+---
+
+<p class="description">
+	{descriptionParts(text).map((part) =>
+		part.type === 'code' ? (
+			<code>{part.text}</code>
+		) : part.type === 'strong' ? (
+			<strong>{part.text}</strong>
+		) : (
+			part.text
+		),
+	)}
+</p>

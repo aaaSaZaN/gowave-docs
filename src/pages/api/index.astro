@@ -1,0 +1,142 @@
+---
+import document from '../../../public/api/openapi.json';
+import ApiDescription from '../../components/ApiDescription.astro';
+import ApiSchema from '../../components/ApiSchema.astro';
+import { groupOperations } from '../../lib/openapi';
+import '../../styles/api.css';
+
+const groups = groupOperations(document).map((group) => ({
+	...group,
+	title: group.name === 'gowave' ? 'GoWave extensions' : group.name,
+}));
+const count = groups.reduce((total, group) => total + group.operations.length, 0);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta
+			name="description"
+			content="GoWave API endpoints, authentication, request bodies and response schemas."
+		>
+		<title>GoWave API</title>
+		<link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml">
+	</head>
+	<body>
+		<a class="skip-link" href="#reference">Skip to API reference</a>
+		<header>
+			<a class="brand" href={`${base}/`}>GoWave <span>API</span></a>
+			<nav aria-label="Documentation">
+				<a href={`${base}/`}>Документация</a>
+				<a href={`${base}/en/`}>English docs</a>
+				<a href={`${base}/api/openapi.json`} download>OpenAPI JSON ↓</a>
+			</nav>
+		</header>
+		<div class="layout">
+			<aside aria-label="API endpoints">
+				<label for="api-search">Search endpoints</label>
+				<input
+					id="api-search"
+					type="search"
+					placeholder="Method, path or description"
+					autocomplete="off"
+				>
+				<p id="result-count" role="status" aria-live="polite">{count} endpoints</p>
+				<nav aria-label="API groups">
+					{groups.map((group, index) => (
+						<div data-nav-group={`group-${index}`}>
+							<a class="group-link" href={`#group-${index}`}>
+								{group.title}
+							</a>
+							<ul>
+								{group.operations.map((operation) => (
+									<li data-nav-operation={operation.id}>
+										<a href={`#${encodeURIComponent(operation.id)}`} title={operation.summary}>
+											<span class="method" data-method={operation.method}>
+												{operation.method}
+											</span>
+											<code>{operation.path}</code>
+										</a>
+									</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</nav>
+			</aside>
+			<main id="reference">
+				<div class="intro">
+					<p class="eyebrow">Contract {document.info.version}</p>
+					<h1>{document.info.title}</h1>
+					<ApiDescription text={document.info.description} />
+					<h2>Authentication</h2>
+					<p>
+						Send requests to your panel at <code>https://&lt;panel domain&gt;/api/…</code>. Each
+						endpoint lists its authentication requirements.
+					</p>
+					<ApiSchema label="Security schemes" value={document.components.securitySchemes} />
+				</div>
+				<p id="no-results" hidden>No endpoints match this search.</p>
+				{groups.map((group, index) => (
+					<section id={`group-${index}`} data-api-group aria-labelledby={`heading-${index}`}>
+						<h2 id={`heading-${index}`}>{group.title}</h2>
+						{group.description && <ApiDescription text={group.description} />}
+						{group.operations.map((operation) => (
+							<details
+								class="operation"
+								id={operation.id}
+								data-operation
+								data-search={operation.searchText}
+							>
+								<summary>
+									<span class="method" data-method={operation.method}>
+										{operation.method}
+									</span>
+									<code>{operation.path}</code>
+									<span class="summary">{operation.summary ?? operation.operationId}</span>
+								</summary>
+								<div class="operation-body">
+									<a class="permalink" href={`#${encodeURIComponent(operation.id)}`}>
+										Permalink ↗
+									</a>
+									{operation.deprecated && <p class="deprecated">Deprecated endpoint</p>}
+									{operation.description && <ApiDescription text={operation.description} />}
+									{operation.security.length > 0 ? (
+										<ApiSchema label="Authentication requirements" value={operation.security} />
+									) : (
+										<p>Authentication: public endpoint.</p>
+									)}
+									{operation.parameters.length > 0 && (
+										<ApiSchema
+											label="Path, query and header parameters"
+											value={operation.parameters}
+										/>
+									)}
+									{operation.requestBody !== undefined && (
+										<ApiSchema label="Request body" value={operation.requestBody} />
+									)}
+									<h3>Responses</h3>
+									{Object.entries(operation.responses ?? {}).map(([status, response]) => (
+										<ApiSchema label={`Response: ${status}`} value={response} />
+									))}
+								</div>
+							</details>
+						))}
+					</section>
+				))}
+				<section aria-labelledby="schemas-heading">
+					<h2 id="schemas-heading">Shared schemas</h2>
+					{Object.entries(document.components.schemas).map(([name, schema]) => (
+						<ApiSchema label={name} value={schema} />
+					))}
+				</section>
+			</main>
+		</div>
+		<script>
+		import '../../scripts/api-search';
+		</script>
+	</body>
+</html>

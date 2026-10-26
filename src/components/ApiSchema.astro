@@ -1,0 +1,12 @@
+---
+interface Props {
+	label: string;
+	value: unknown;
+}
+const { label, value } = Astro.props;
+---
+
+<details class="schema">
+	<summary>{label}</summary>
+	<pre><code>{JSON.stringify(value, null, 2)}</code></pre>
+</details>

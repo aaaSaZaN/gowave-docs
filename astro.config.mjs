@@ -1,12 +1,14 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+
 import starlight from '@astrojs/starlight';
+import { defineConfig, passthroughImageService } from 'astro/config';
 
 // Published to GitHub Pages as https://aaasazan.github.io/gowave-docs/.
 // With a custom domain, set `site` to it and remove `base`.
 export default defineConfig({
 	site: 'https://aaasazan.github.io',
 	base: '/gowave-docs',
+	image: { service: passthroughImageService() },
 	integrations: [
 		starlight({
 			title: 'GoWave',
@@ -37,7 +39,12 @@ export default defineConfig({
 						'install/systemd',
 						{
 							label: 'Reverse proxy',
-							items: ['install/reverse-proxy/overview', 'install/reverse-proxy/caddy', 'install/reverse-proxy/nginx', 'install/reverse-proxy/ssl-preread'],
+							items: [
+								'install/reverse-proxy/overview',
+								'install/reverse-proxy/caddy',
+								'install/reverse-proxy/nginx',
+								'install/reverse-proxy/ssl-preread',
+							],
 						},
 						{
 							label: 'Go-нода',
@@ -51,12 +58,22 @@ export default defineConfig({
 				{
 					label: 'Возможности',
 					translations: { en: 'Features' },
-					items: ['features/subscription-rules', 'features/templates', 'features/template-variables'],
+					items: [
+						'features/subscription-rules',
+						'features/templates',
+						'features/template-variables',
+					],
 				},
 				{
 					label: 'Миграция',
 					translations: { en: 'Migration' },
-					items: ['migration/remnawave', 'migration/pasarguard', 'migration/sqlite-to-docker', 'migration/postgres-18', 'migration/docker-node'],
+					items: [
+						'migration/remnawave',
+						'migration/pasarguard',
+						'migration/sqlite-to-docker',
+						'migration/postgres-18',
+						'migration/docker-node',
+					],
 				},
 				{
 					label: 'Справочник',

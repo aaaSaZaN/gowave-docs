@@ -1,0 +1,46 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": [
+			"src/lib/**",
+			"src/scripts/**",
+			"tests/**",
+			"astro.config.mjs",
+			"src/content.config.ts",
+			"package.json",
+			"tsconfig.json",
+			"biome.json",
+			"src/styles/api.css",
+			"src/components/ApiSchema.astro",
+			"src/components/ApiDescription.astro",
+			"src/pages/api/**",
+			"scripts/check-build.ts"
+		]
+	},
+	"formatter": {
+		"indentStyle": "tab",
+		"lineWidth": 100
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single"
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended"
+		}
+	},
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": {
+			"enabled": true
+		}
+	}
+}
