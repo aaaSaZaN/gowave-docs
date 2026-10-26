@@ -2,7 +2,7 @@
 
 Documentation and landing page for [GoWave](https://github.com/aaaSaZaN/gowave), built with [Astro Starlight](https://starlight.astro.build). Russian is the default locale, English lives under `src/content/docs/en/`.
 
-Use the Bun version in `package.json` and Node.js 22.22.0 or newer. Bun manages dependencies, scripts and tests; Astro runs on Node.js for compatibility with Pagefind's search index builder.
+Use the Bun version in `package.json` and Node.js 22.23.4 or newer. Bun manages dependencies, scripts and tests; Astro runs on Node.js for compatibility with Pagefind's search index builder.
 
 ```bash
 bun install --frozen-lockfile

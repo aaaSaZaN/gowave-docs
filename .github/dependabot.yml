@@ -16,6 +16,10 @@ updates:
       bun-dependencies:
         patterns:
           - "*"
+    ignore:
+      # astro check supports TypeScript 5 and 6; TypeScript 7 breaks typecheck.
+      - dependency-name: "typescript"
+        versions: [">=7"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
