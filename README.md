@@ -22,4 +22,4 @@ Pushing to `main` publishes the site to GitHub Pages (`.github/workflows/deploy.
 
 ## Benchmark data
 
-`src/data/benchmarks.json` (landing bars) and `src/data/benchmark-tables.json` (benchmarks page) are generated from benchmark results by `scripts/site_data.py`, which also copies the SVG charts into `public/benchmarks/`. Update the text on the benchmarks pages when the numbers change.
+`src/data/benchmarks.json` (landing bars) and `src/data/benchmark-tables.json` (benchmarks page) are generated from benchmark results by `scripts/benchmark-data.py` (which takes an unpacked GitHub Actions artifact directory) or `scripts/site_data.py`, which also copies the SVG charts into `public/benchmarks/`. Update the text on the benchmarks pages when the numbers change.

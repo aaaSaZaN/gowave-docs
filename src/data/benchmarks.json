@@ -21,11 +21,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 2036
+          "value": 1169
         },
         {
           "label": "Remnawave",
-          "value": 1060
+          "value": 555
         }
       ]
     },
@@ -46,11 +46,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 961
+          "value": 561
         },
         {
           "label": "Remnawave",
-          "value": 695
+          "value": 400
         }
       ]
     },
@@ -71,11 +71,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 59
+          "value": 60
         },
         {
           "label": "Remnawave",
-          "value": 1082
+          "value": 1036
         }
       ]
     },
@@ -96,11 +96,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 149
+          "value": 209
         },
         {
           "label": "Remnawave",
-          "value": 4262
+          "value": 7061
         }
       ]
     }
