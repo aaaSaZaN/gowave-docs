@@ -1,20 +1,25 @@
 ---
 title: С PasarGuard
-description: Импорт пользователей и HWID-устройств из PasarGuard.
+description: Импорт пользователей, сквадов и профилей из PasarGuard.
 sidebar:
   order: 2
 ---
 
-[Установщик](../../overview/quick-start/) сам находит Remnawave и PasarGuard и предлагает перенос. Команды ниже - для ручного запуска. Исходные базы во всех сценариях только читаются.
+Установщик сам находит PasarGuard и предлагает перенос. Команды ниже нужны для ручного запуска. База источника читается без изменения исходных данных.
 
 ```bash
 # Найти базу автоматически
 gowave import pasarguard
 
-# Или указать путь к файлу или DSN
+# Указать путь к SQLite или ZIP-архиву с бэкапом
 gowave import pasarguard /opt/pasarguard/data/db.sqlite3
+gowave import pasarguard /path/to/backup.zip
+
+# Или передать DSN базы PostgreSQL
+gowave import pasarguard 'postgresql://user:pass@localhost/pasarguard'
 ```
 
-- Переносятся пользователи, VLESS UUID, пароли Trojan, Shadowsocks и Hysteria, лимиты трафика, стратегии сброса, заметки и HWID-устройства.
-- Пользователи привязываются к скваду по умолчанию.
-- База находится по `SQLALCHEMY_DATABASE_URL` из `/opt/pasarguard/.env` (SQLite, PostgreSQL или TimescaleDB, в том числе через pgbouncer) или по файлу `/var/lib/pasarguard/db.sqlite3`. MySQL и MariaDB не поддерживаются.
+- Переносятся пользователи, VLESS UUID, пароли Trojan, Shadowsocks и Hysteria, лимиты трафика, стратегии сброса, заметки, даты использования и привязанные HWID-устройства.
+- Переносятся профили Xray, входящие соединения, группы пользователей и сквады, параметры хостов, ноды и история трафика.
+- База источника определяется автоматически по переменной `SQLALCHEMY_DATABASE_URL` в `/opt/pasarguard/.env` (поддерживаются SQLite, PostgreSQL и TimescaleDB, включая подключения через PgBouncer) либо по файлу `/var/lib/pasarguard/db.sqlite3`.
+- При импорте архива ZIP файл `db.sqlite3` должен лежать в корне архива.

@@ -19,7 +19,7 @@ cd /opt/gowave && sudo -u gowave gowave rescue
 gowave rescue
 ```
 
-Сброс и создание администраторов, импорт, миграции - всё по пунктам.
+Сброс и создание администраторов, импорт из PasarGuard и 3x-ui, миграции баз данных - всё доступно по пунктам меню.
 
 ## Команды
 
@@ -31,8 +31,11 @@ gowave rescue
 | `gowave rescue --enable-password-auth` | Принудительно включает вход по логину и паролю |
 | `gowave rescue --print-secret-key` | Выводит `SECRET_KEY` для подключения нод |
 | `gowave rescue --help` | Справка по флагам |
-| `gowave import pasarguard [путь\|dsn]` | Импорт из PasarGuard |
+| `gowave import pasarguard [путь\|dsn]` | Импорт из PasarGuard (SQLite, ZIP-архив или PostgreSQL) |
+| `gowave import 3x-ui [путь]` | Импорт клиентов и входящих соединений из 3x-ui (SQLite) |
+| `gowave migrate pg-to-pg [исходный_dsn] [целевой_dsn] [--force]` | Перенос напрямую из PostgreSQL Remnawave в PostgreSQL GoWave |
 | `gowave migrate pg-to-sqlite [dsn] [файл]` | Перенос из PostgreSQL Remnawave в SQLite |
+| `gowave migrate sqlite-to-pg [файл] [целевой_dsn] [--force]` | Перенос базы SQLite GoWave в существующий PostgreSQL |
 | `gowave migrate to-docker` | Перевод установки с SQLite в Docker с PostgreSQL |
 | `gowave service install [каталог]` | От root: создаёт пользователя `gowave` и ограничения службы systemd, см. [Systemd и SQLite](../../install/systemd/#служба). Каталог по умолчанию `/opt/gowave` |
 

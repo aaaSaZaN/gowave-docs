@@ -15,6 +15,8 @@ A Linux server, a domain with an A record pointing to it, and root access. See [
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/install.sh)"
 ```
 
+<small>Ansible playbooks repository: [aaaSaZaN/gowave-ansible](https://github.com/aaaSaZaN/gowave-ansible)</small>
+
 The installer asks for the database, the domain and the reverse proxy, then sets up HTTPS. For a manual installation, see [Systemd and SQLite](../../install/systemd/) or [Docker Compose and PostgreSQL](../../install/docker/).
 
 ## Step 2. Administrator
@@ -35,4 +37,4 @@ Optional. The [subscription page](../../install/subscription-page/) shows users 
 
 ## Moving from another panel
 
-The installer detects Remnawave and PasarGuard on the server and offers to move their data. Manual commands are in the [Migration](../../migration/remnawave/) section.
+The installer detects Remnawave and PasarGuard on the server and offers to move their data. 3x-ui databases can be imported via CLI or rescue menu. Manual commands are in the [Migration](../../migration/remnawave/) section.

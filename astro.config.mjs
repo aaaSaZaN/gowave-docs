@@ -70,6 +70,7 @@ export default defineConfig({
 					items: [
 						'migration/remnawave',
 						'migration/pasarguard',
+						'migration/3x-ui',
 						'migration/sqlite-to-docker',
 						'migration/postgres-18',
 						'migration/docker-node',

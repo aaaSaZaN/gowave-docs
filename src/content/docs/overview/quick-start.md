@@ -15,6 +15,8 @@ sidebar:
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/install.sh)"
 ```
 
+<small>Репозиторий с Ansible-плейбуками: [aaaSaZaN/gowave-ansible](https://github.com/aaaSaZaN/gowave-ansible)</small>
+
 Установщик спросит базу данных, домен и reverse proxy, а потом сам настроит HTTPS. Для ручной установки используйте [Systemd и SQLite](../../install/systemd/) или [Docker Compose и PostgreSQL](../../install/docker/).
 
 ## Шаг 2. Администратор
@@ -35,4 +37,4 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/mai
 
 ## Если вы переезжаете
 
-Установщик сам находит Remnawave и PasarGuard на сервере и предлагает перенести данные. Ручные команды описаны в разделе [Миграция](../../migration/remnawave/).
+Установщик сам находит Remnawave и PasarGuard на сервере и предлагает перенести данные. Базу 3x-ui можно перенести через CLI или rescue-меню. Ручные команды описаны в разделе [Миграция](../../migration/remnawave/).
