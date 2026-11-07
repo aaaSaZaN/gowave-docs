@@ -86,7 +86,7 @@ systemctl enable --now certbot.timer
 certbot renew --dry-run
 ```
 
-В RHEL-like используйте `systemctl enable --now certbot-renew.timer`. Плагин Cloudflare повторно использует сохранённый файл токена — оставьте его на сервере.
+В RHEL-like используйте `systemctl enable --now certbot-renew.timer`. Плагин Cloudflare повторно использует сохранённый файл токена, поэтому оставьте его на сервере.
 
 ## Конфигурация Nginx
 

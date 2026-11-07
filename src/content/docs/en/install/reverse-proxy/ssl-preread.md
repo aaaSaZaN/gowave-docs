@@ -229,8 +229,8 @@ Leave out the `listen 443 ... default_server` with `ssl_reject_handshake` from t
 Port `3000` is taken by the panel, so the Go node needs another management port, for example `2222`. The installer is downloaded in full first, so you can read it before running it:
 
 ```bash
-curl -fsSLo /tmp/remnanode-install.sh https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh
-sudo NODE_PORT=2222 sh /tmp/remnanode-install.sh
+curl -fsSLo /tmp/gowave-node-install.sh https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh
+sudo NODE_PORT=2222 sh /tmp/gowave-node-install.sh
 ```
 
 In the panel, add the node with this server's IP and port `2222`.

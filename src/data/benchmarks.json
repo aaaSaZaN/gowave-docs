@@ -1,7 +1,7 @@
 {
   "note": {
-    "ru": "GitHub Actions (4 vCPU), Docker, по 2 CPU и 2 ГиБ на панель, PostgreSQL 17 (1 CPU) у каждой, 1000 пользователей, 32 одновременных клиента. Медиана 3 прогонов по 20 с. Remnawave 3.4.5.",
-    "en": "GitHub Actions (4 vCPU), Docker, 2 CPU and 2 GiB per panel, PostgreSQL 17 (1 CPU) each, 1,000 users, 32 concurrent clients. Median of 3 20 s runs. Remnawave 3.4.5."
+    "ru": "GitHub Actions (4 vCPU), Docker, по 2 CPU и 2 ГиБ на панель, PostgreSQL 17 (1 CPU) у каждой, 1000 пользователей, 32 одновременных клиента. Медиана 3 прогонов по 20 с. Remnawave 3.4.8.",
+    "en": "GitHub Actions (4 vCPU), Docker, 2 CPU and 2 GiB per panel, PostgreSQL 17 (1 CPU) each, 1,000 users, 32 concurrent clients. Median of 3 20 s runs. Remnawave 3.4.8."
   },
   "groups": [
     {
@@ -21,11 +21,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 1169
+          "value": 2168
         },
         {
           "label": "Remnawave",
-          "value": 555
+          "value": 1074
         }
       ]
     },
@@ -46,11 +46,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 561
+          "value": 1495
         },
         {
           "label": "Remnawave",
-          "value": 400
+          "value": 695
         }
       ]
     },
@@ -71,11 +71,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 60
+          "value": 39
         },
         {
           "label": "Remnawave",
-          "value": 1036
+          "value": 1042
         }
       ]
     },
@@ -96,11 +96,11 @@
       "rows": [
         {
           "label": "GoWave",
-          "value": 209
+          "value": 166
         },
         {
           "label": "Remnawave",
-          "value": 7061
+          "value": 4298
         }
       ]
     }

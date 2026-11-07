@@ -1,50 +1,48 @@
 ---
 title: From 3x-ui
-description: Importing clients, credentials and inbounds from a 3x-ui database.
+description: Importing clients, inbounds and traffic from a 3x-ui database.
 sidebar:
   order: 3
 ---
 
-Migrating from 3x-ui moves VLESS, Trojan and Shadowsocks clients directly into GoWave. Data is read directly from the panel's SQLite database file.
+GoWave reads a 3x-ui database (SQLite) and imports its clients and inbounds. The installer does not offer this import; it is a separate command. The schema was checked against the 3x-ui v2.8.5 sources, and the import has seen few real databases so far, so try it on a test GoWave database first.
 
-## Preparation
-
-Before starting, stop the 3x-ui service so the database does not change during the read:
+Before importing, stop 3x-ui (`x-ui stop`) and back up the GoWave database. Run the command from the panel directory:
 
 ```bash
-systemctl stop x-ui
-```
-
-Make a backup of the GoWave database. The import runs in a single transaction: if any error occurs, GoWave rolls back to its original state.
-
-## Running the import
-
-If the database is in the default location `/etc/x-ui/x-ui.db`, the path is optional:
-
-```bash
-# Default path: /etc/x-ui/x-ui.db
+# /etc/x-ui/x-ui.db by default
 gowave import 3x-ui
 
-# Or with an explicit file path
-gowave import 3x-ui /etc/x-ui/x-ui.db
+# Another path
+gowave import 3x-ui /root/x-ui.db
 ```
 
-The import is also available in `gowave rescue` (option 11).
+In the `gowave rescue` menu it is item 11. To run the import when the panel is in Docker, see the [CLI reference](../../reference/cli/).
 
-## What is migrated
+The import writes to GoWave in a single transaction. Any error rolls everything back and leaves the GoWave database as it was.
 
-- Credentials: UUIDs for VLESS, passwords for Trojan and Shadowsocks.
-- Limits and traffic reset: byte values, reset periods (day, week, month, year, or no reset).
-- Expiration dates: absolute timestamps. If expired, the status becomes `EXPIRED`. If bandwidth is exceeded, the status becomes `LIMITED`.
-- Identifiers: Telegram IDs and client comments.
-- Subscription tokens (`subId`). If multiple clients share a token, the first keeps it and subsequent clients receive new unique tokens.
-- Traffic statistics: upload, download, total usage and last online timestamp from `client_traffics`.
-- Inbounds: converted into GoWave config profiles and internal squads named `3x-ui-<id>-<tag>`.
+## What is imported
 
-## Manual steps after import
+Each inbound becomes a configuration profile holding just that inbound, plus an internal squad named `3x-ui-<id>-<tag>`. The inbound's clients become users in that squad.
 
-1. **Nodes.** Install GoWave Node on servers carrying traffic and connect them to the panel.
-2. **Hosts.** Create public hosts and attach them to the imported squads.
-3. **Subscription links.** Provide new subscription links to clients whose tokens or panel domains changed.
-4. **Device limits.** IP limits from 3x-ui do not convert to HWID; configure device limits in GoWave.
-5. **Deferred activation.** Clients with deferred expiry (negative timestamps) cause the import to roll back. Activate or remove them in 3x-ui before importing.
+| In 3x-ui | In GoWave |
+| :--- | :--- |
+| Client `email` | Username. Without an email, `3xui_<inbound>_<number>` |
+| UUID (VLESS), password (Trojan, Shadowsocks) | The same credentials |
+| `totalGB` | Traffic limit. In the 3x-ui database this is already bytes, despite the name |
+| `expiryTime` | Expiry (from milliseconds). None means no expiry |
+| Client and inbound `enable` | Status: disabled becomes `DISABLED`, expired `EXPIRED`, over the limit `LIMITED` |
+| `reset` of 1, 7, 30, 365 days | Traffic reset every day, week, month, year |
+| `tgId`, `comment` | Telegram ID, description |
+| `subId` | Subscription short UUID |
+| `client_traffics` | Used and lifetime traffic, last online time |
+
+## Limitations
+
+- Only VLESS, Trojan and Shadowsocks are supported. An inbound with another protocol rolls back the whole import.
+- A client with a delayed expiry (negative `expiryTime`, counted from the first connection) also rolls back the import. Activate such clients or give them a fixed expiry before importing.
+- If one email appears in several inbounds with different credentials, the import rolls back. Give those clients different emails.
+- Clients sharing a `subId`: the first keeps it, the others get a separate token and need new links. A kept `subId` keeps the old token, but the old link's domain and path may need reverse proxy changes.
+- IP limits are not turned into HWID limits. Other reset periods, panel settings, admin logins and the external Nginx from x-ui-pro are moved by hand.
+
+Before going live, create public hosts for the profiles and connect [GoWave Node](../../install/node/install/) to the servers where Xray ran.

@@ -17,15 +17,15 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/mai
 
 <small>Репозиторий с Ansible-плейбуками: [aaaSaZaN/gowave-ansible](https://github.com/aaaSaZaN/gowave-ansible)</small>
 
-Установщик спросит базу данных, домен и reverse proxy, а потом сам настроит HTTPS. Для ручной установки используйте [Systemd и SQLite](../../install/systemd/) или [Docker Compose и PostgreSQL](../../install/docker/).
+[Установщик](../../install/installer/) спросит базу данных, канал обновлений, reverse proxy и домен, а потом сам настроит HTTPS. Для ручной установки используйте [Systemd и SQLite](../../install/systemd/) или [Docker Compose и PostgreSQL](../../install/docker/).
 
 ## Шаг 2. Администратор
 
-Откройте `https://<домен>` сразу после установки: первый, кто зайдёт в панель, создаёт администратора.
+Откройте адрес, который покажет установщик (`https://<домен>` или с вашим путём панели), сразу после установки: первый, кто зайдёт в панель, создаёт администратора.
 
 ## Шаг 3. Нода
 
-Добавьте ноду в панели и поставьте [Go-ноду](../../install/node/install/) на сервер, через который пойдёт трафик. Установщику нужен `SECRET_KEY` из настроек ноды в панели.
+Добавьте ноду в панели и поставьте [GoWave Node](../../install/node/install/) на сервер, через который пойдёт трафик. Панель при добавлении ноды покажет готовую команду установки с `SECRET_KEY` и портом, её достаточно выполнить на сервере ноды.
 
 ## Шаг 4. Пользователи
 
@@ -37,4 +37,4 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/mai
 
 ## Если вы переезжаете
 
-Установщик сам находит Remnawave и PasarGuard на сервере и предлагает перенести данные. Базу 3x-ui можно перенести через CLI или rescue-меню. Ручные команды описаны в разделе [Миграция](../../migration/remnawave/).
+Установщик сам находит Remnawave и PasarGuard на сервере и предлагает перенести данные. Ручные команды, в том числе импорт из 3x-ui, описаны в разделе [Миграция](../../migration/remnawave/).

@@ -1,58 +1,108 @@
 ---
 title: Установка
-description: Установка Go-ноды одной командой.
+description: Установка GoWave Node (gowave-node) одной командой.
 sidebar:
   order: 1
 ---
 
-Go-нода ([remnanode-go](https://github.com/aaaSaZaN/remnanode-go)) управляет ядром Xray на сервере, через который идёт трафик пользователей. Это реализация ноды Remnawave на Go: она совместима с Remnawave Node 3.4.2 и подключается как к GoWave, так и к оригинальной панели Remnawave. Xray работает отдельным процессом, Node.js и Docker не нужны.
+GoWave Node ([gowave-node](https://github.com/aaaSaZaN/gowave-node)) управляет ядром Xray на сервере, через который идёт трафик пользователей. Это реализация ноды Remnawave на Go: протокол панели совместим с Remnawave Node 3.4.2, поэтому нода подключается и к GoWave, и к оригинальной панели Remnawave. Xray работает отдельным процессом, Node.js и Docker не нужны.
+
+Раньше проект назывался remnanode-go, а команда - `remnanode`. Старые установки установщик переводит на новое имя сам, см. [ниже](#переезд-со-старой-установки-remnanode).
 
 ## Требования
 
-- Linux. Архитектуры: `amd64`, `386`, `arm64`, `armv7`, `armv6`, `armv5`, `riscv64`, `mips`, `mipsle`, `mips64`, `mips64le`. Серверные проверки проходят на `amd64` и `arm64`, остальные сборки для роутеров не сертифицированы.
-- Система запуска: systemd, OpenRC (Alpine) или procd (OpenWrt).
+- Linux. Архитектуры: `amd64`, `386`, `arm64`, `armv7`, `armv6`, `armv5`, `riscv64`, `mips`, `mipsle`, `mips64`, `mips64le`. Серверные проверки проходят на `amd64` и `arm64`, сборки для роутеров не сертифицированы.
+- Система запуска: systemd, OpenRC (Alpine), procd (OpenWrt) или init.d в Entware (Keenetic и другие системы с opkg).
 - `curl` или `wget` и любой из `sha256sum`, `shasum`, `openssl`.
 - Доступ root.
 - Для фильтров трафика в плагинах нужны `nft`, `ss` (iproute2) и право `CAP_NET_ADMIN`.
 
-## Установка
+## Установка из панели
+
+При добавлении ноды панель показывает готовую команду: в ней уже подставлены `SECRET_KEY` и порт ноды. Скопируйте её кнопкой и выполните на сервере ноды.
+
+Если панель стоит на этом же сервере, ноду можно поставить и [установщиком GoWave](../../installer/#локальная-нода).
+
+## Установка вручную
 
 1. В панели добавьте ноду и скопируйте её `SECRET_KEY` из настроек ноды.
 2. На сервере ноды выполните:
 
    ```bash
-   sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
+   sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"
    ```
 
    Без `curl` подойдёт `sudo sh -c "$(wget -qO- <тот же адрес>)"`.
 
-3. Установщик спросит `SECRET_KEY` и `NODE_PORT` (по умолчанию `3000`). Порт должен совпадать с портом ноды в панели.
+3. Установщик спросит `SECRET_KEY`. Порт управления по умолчанию `3000`, он должен совпадать с портом ноды в панели. Другой порт передайте переменной `NODE_PORT`.
 
 Без вопросов, например из скрипта:
 
 ```bash
-sudo SECRET_KEY=... NODE_PORT=2222 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh)"
+sudo SECRET_KEY=... NODE_PORT=2222 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"
 ```
 
-## Ручная установка
+Если порт уже занят другой программой, установщик остановится до того, как что-то поменяет. Новая нода считается установленной, когда служба управления отвечает (до 30 секунд), так что настраивать её в панели можно сразу после этого. При обновлении и переезде установщик ждёт запуска Xray до двух минут, а при неудаче возвращает прежнюю службу.
 
-Бинарники `remnanode-linux-<архитектура>` и `checksums.txt` лежат в [релизах remnanode-go](https://github.com/aaaSaZaN/remnanode-go/releases). Положите бинарник в `/opt/remnanode`, создайте `.env` по [описанию настроек](../configuration/) и службу systemd:
+Та же команда обновляет уже установленную ноду и переносит ноду из Docker, см. [С Docker-ноды на Go-ноду](../../../migration/docker-node/).
+
+### Параметры установщика
+
+| Переменная | Что задаёт |
+| :--- | :--- |
+| `SECRET_KEY` | Ключ из настроек ноды. Используется, только если нода ещё не настроена |
+| `NODE_PORT` | Порт управления, по умолчанию `3000`. Тоже только для ещё не настроенной ноды |
+| `GOWAVE_NODE_VERSION` | Тег релиза вместо последнего, например `v1.0.6-rc.1` для проверки кандидата. Если такого тега нет, установщик ничего не меняет |
+| `GOWAVE_NODE_INIT` | Система запуска, если автоопределение ошиблось: `systemd`, `openrc`, `procd` или `entware` |
+
+Старые переменные с префиксом `REMNANODE_` тоже принимаются, но `GOWAVE_NODE_` важнее.
+
+## Что ставится
+
+Новая установка живёт в `/opt/gowave-node`, служба называется `gowave-node` и работает от root, как Docker-нода. Xray должен иметь доступ ко всему, на что ссылается конфигурация из панели: к сокетам в `/dev/shm`, которые он делит с nginx, к сертификатам других служб, к портам ниже 1024. Если нужна изоляция, добавьте собственное переопределение systemd.
+
+Установщик также кладёт индекс ASN для плагинов в `/usr/local/share/asn/asn-prefixes.zip`.
+
+## Entware
+
+На Entware установщик пишет `/opt/etc/init.d/S99gowave-node`. Его запускает `rc.unslung` при загрузке, а если нода завершится, скрипт поднимет её через 3 секунды. Файлы лежат в `/opt`, команды в `/opt/bin`, служебная папка - `/tmp/gowave-node`.
+
+Особенности:
+
+- вывод ноды не попадает в системный журнал, читайте его командой `gowave-node logs`;
+- обновление из панели работает только с systemd, поэтому обновляйте командой `gowave-node update`;
+- откройте в файрволе роутера `NODE_PORT` и порты inbound'ов Xray для WAN-интерфейса.
+
+## Переезд со старой установки remnanode
+
+Если на сервере стоит нода под старым именем (`remnanode`), установщик переводит её на службу `gowave-node` автоматически:
+
+- каталог установки остаётся прежним, например `/opt/remnanode`, чтобы не сломались пути к сертификатам и своему ядру;
+- секрет, порт и остальные настройки из `.env` сохраняются, старые имена переменных переводятся в новые;
+- команды `remnanode` и `remnanode-go` остаются ссылками на `gowave-node`;
+- старая служба выключается только после того, как новая скачана и проверена. Если переключение не удалось, прежняя служба и `.env` возвращаются.
+
+Если старая нода стояла в нестандартном каталоге, укажите его в `GOWAVE_NODE_LEGACY_INSTALL_DIR` (на systemd каталог находится сам по `WorkingDirectory` службы). Менять каталог установки во время переезда нельзя. Свои переопределения юнита и описания s6 проверьте отдельно: установщик их не переименовывает.
+
+## Ручная установка без установщика
+
+Бинарники `gowave-node-linux-<архитектура>`, `checksums.txt` и `asn-prefixes.zip` лежат в [релизах gowave-node](https://github.com/aaaSaZaN/gowave-node/releases). Положите бинарник в `/opt/gowave-node`, создайте `.env` по [описанию настроек](../configuration/) и службу systemd:
 
 ```ini
 [Unit]
-Description=Remnanode (Go)
+Description=gowave-node
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/remnanode
-ExecStart=/opt/remnanode/remnanode
-RuntimeDirectory=remnanode
+WorkingDirectory=/opt/gowave-node
+ExecStart=/opt/gowave-node/gowave-node
+RuntimeDirectory=gowave-node
 RuntimeDirectoryMode=0700
 UMask=0077
-Restart=on-failure
+Restart=always
 RestartSec=3
 LimitNOFILE=1048576
 
@@ -60,4 +110,11 @@ LimitNOFILE=1048576
 WantedBy=multi-user.target
 ```
 
-Затем установите ядро: `/opt/remnanode/remnanode core install -y`.
+Затем установите ядро и запустите службу:
+
+```bash
+/opt/gowave-node/gowave-node core install -y
+systemctl enable --now gowave-node
+```
+
+Сам бинарник ссылок в `PATH` не создаёт. Чтобы команда `gowave-node` работала из любого каталога, сделайте ссылку: `ln -s /opt/gowave-node/gowave-node /usr/local/bin/gowave-node`.

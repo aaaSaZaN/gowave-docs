@@ -43,7 +43,10 @@ def main(artifact):
     startup_ms = {t: statistics.median(s["api_ready_ms"] for s in startup if s["target"] == t) for t in TARGETS}
     memory = {t: statistics.median(v["memory"] for k, v in concurrency.items() if k[3] == t) for t in TARGETS}
 
-    load_config = json.loads((artifact / "config.json").read_text())["load"]
+    full_config = json.loads((artifact / "config.json").read_text())
+    load_config = full_config["load"]
+    rem_image = full_config.get("targets", {}).get("remnawave", {}).get("metadata", {}).get("application", {}).get("image_reference", "")
+    rem_ver = rem_image.split(":")[-1] if ":" in rem_image else "3.4.8"
     runs, seconds = load_config["repetitions"], load_config["duration_seconds"]
     cpus = re.search(r"^CPU\(s\):\s+(\d+)", (artifact / "machine.txt").read_text(), re.M).group(1)
 
@@ -54,9 +57,9 @@ def main(artifact):
     landing = {
         "note": {
             "ru": f"GitHub Actions ({cpus} vCPU), Docker, по 2 CPU и 2 ГиБ на панель, PostgreSQL 17 (1 CPU) у каждой, "
-                  f"1000 пользователей, {LEVEL} одновременных клиента. Медиана {runs} прогонов по {seconds} с. Remnawave 3.4.5.",
+                  f"1000 пользователей, {LEVEL} одновременных клиента. Медиана {runs} прогонов по {seconds} с. Remnawave {rem_ver}.",
             "en": f"GitHub Actions ({cpus} vCPU), Docker, 2 CPU and 2 GiB per panel, PostgreSQL 17 (1 CPU) each, "
-                  f"1,000 users, {LEVEL} concurrent clients. Median of {runs} {seconds} s runs. Remnawave 3.4.5.",
+                  f"1,000 users, {LEVEL} concurrent clients. Median of {runs} {seconds} s runs. Remnawave {rem_ver}.",
         },
         "groups": [
             {"title": {"ru": "Чтение API", "en": "API reads"},

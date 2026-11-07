@@ -5,17 +5,18 @@ sidebar:
   order: 2
 ---
 
-Настройки читаются из `.env` в рабочей папке (и из `../.env`) или из окружения процесса. Некорректные значения не принимаются: панель не запустится и напишет, какая переменная неверна.
+Настройки читаются из `.env` в рабочей папке (и из `../.env`) или из окружения процесса. Некорректные значения не принимаются: панель не запустится и напишет, какая переменная неверна. После изменения `.env` перезапустите панель: `systemctl restart gowave` или `docker compose up -d`.
 
 ## Основные
 
 | Переменная | По умолчанию | Описание |
 | :--- | :--- | :--- |
 | `APP_SECRET` | *обязательно* | Секрет не короче 32 символов. Подписывает JWT и участвует в хешах паролей, API-токенах и шифровании SSH-данных нод - не меняйте его на работающей панели |
-| `APP_HOST` | `127.0.0.1` | Адрес, на котором слушают панель и метрики. Наружу панель отдаётся через reverse proxy с HTTPS; `0.0.0.0` нужен только внутри контейнера |
+| `APP_HOST` | `127.0.0.1` | Адрес, на котором слушают панель и метрики. Наружу панель отдаётся через reverse proxy с HTTPS; `0.0.0.0` нужен только внутри контейнера. С другим адресом панель запустится, но напишет в журнал предупреждение |
 | `APP_PORT` | `3000` | Порт панели и API |
 | `PANEL_DOMAIN` | `localhost:3000` | Домен панели |
-| `SUB_PUBLIC_DOMAIN` | `localhost:3000/api/sub` | Публичный адрес подписок |
+| `PANEL_BASE_PATH` | `/` | Путь веб-интерфейса, например `/private/panel/`. API, подписки и метрики остаются на своих адресах. Подробнее - в [установщике](../../install/installer/#путь-панели) |
+| `SUB_PUBLIC_DOMAIN` | `localhost:3000/api/sub` | Публичный адрес подписок, без `https://` и `/` в конце |
 | `FRONT_END_DOMAIN` | `*` | Разрешённые домены для CORS |
 | `JWT_AUTH_LIFETIME` | `12` | Срок жизни сессии администратора, часы |
 | `SHORT_UUID_LENGTH` | `16` | Длина короткого UUID подписки, 16-64 |
@@ -24,28 +25,43 @@ sidebar:
 
 | Переменная | По умолчанию | Описание |
 | :--- | :--- | :--- |
-| `DB_DRIVER` | `sqlite` | `sqlite` или `postgres`. Если не задан, а `DATABASE_URL` начинается с `postgres://`, выбирается PostgreSQL |
+| `DB_DRIVER` | `sqlite` | `sqlite` или `postgres`. Если не задан, а `DATABASE_URL` начинается с `postgres://` или `postgresql://`, выбирается PostgreSQL |
 | `DATABASE_URL` | `gowave.db` | Путь к файлу SQLite или DSN PostgreSQL |
 | `DB_MAX_CONNECTIONS` | `20` | Размер пула соединений PostgreSQL, 1-500. Каждое соединение - отдельный процесс PostgreSQL на несколько МБ; 20 хватает даже под нагрузкой бенчмарка |
+
+## Журнал
+
+| Переменная | По умолчанию | Описание |
+| :--- | :--- | :--- |
+| `LOG_LEVEL` | `info` | `debug`, `info`, `warn` или `error` |
+| `LOG_FORMAT` | `text` | `text` для `journalctl` и `docker compose logs`, `json` для сборщиков логов |
+| `IS_HTTP_LOGGING_ENABLED` | `false` | Писать в журнал каждый HTTP-запрос, включая запросы подписок. На загруженной панели это много строк |
+
+Что пишется в журнал и как его читать - на странице [Журнал](../logs/).
 
 ## Метрики
 
 | Переменная | По умолчанию | Описание |
 | :--- | :--- | :--- |
-| `METRICS_PORT` | `3001` | Порт Prometheus-метрик |
-| `METRICS_USER`, `METRICS_PASS` | не заданы | Basic auth для `/metrics` |
+| `METRICS_ENABLED` | `true` | `false` вообще не открывает порт метрик. Установщик на systemd пишет `false` |
+| `METRICS_PORT` | `3001` | Порт Prometheus-метрик, слушает на `APP_HOST` |
+| `METRICS_USER`, `METRICS_PASS` | не заданы | Basic auth для `/metrics`. Пока оба не заданы, `/metrics` всегда отвечает 401 |
+
+На порту метрик есть ещё `/health`: он проверяет соединение с базой и работает без пароля. Остальные пути на этом порту обрывают соединение.
 
 ## Поведение сервиса
 
 | Переменная | По умолчанию | Описание |
 | :--- | :--- | :--- |
-| `SERVICE_CLEAN_USAGE_HISTORY` | `false` | Очищать историю использования |
+| `SERVICE_CLEAN_USAGE_HISTORY` | `false` | Раз в неделю (понедельник, 00:30 UTC) полностью очищать историю трафика пользователей по нодам |
 | `SERVICE_DISABLE_USER_USAGE_RECORDS` | `false` | Не записывать статистику трафика по пользователям |
 | `SERVICE_DISABLE_SRH_RECORDS` | `false` | Не записывать историю запросов подписки |
-| `USER_USAGE_IGNORE_BELOW_BYTES` | `0` | Не учитывать трафик меньше этого значения |
-| `EXPORT_TO_STREAM_ENABLED` | `false` | Экспорт событий в поток |
+| `USER_USAGE_IGNORE_BELOW_BYTES` | `0` | Не учитывать трафик пользователя за опрос, если он меньше этого числа байт |
+| `EXPORT_TO_STREAM_ENABLED` | `false` | Только флаг для совместимости: API отдаёт его значение, но экспорта в Redis Streams в GoWave нет |
 
 ## Уведомления
+
+Как устроены вебхуки и как включить или выключить отдельные события - на странице [Уведомления](../../features/notifications/).
 
 ### Вебхуки
 
@@ -53,7 +69,7 @@ sidebar:
 | :--- | :--- |
 | `WEBHOOK_ENABLED` | `true`, чтобы включить |
 | `WEBHOOK_URL` | Один или несколько адресов через запятую, `http://` или `https://` |
-| `WEBHOOK_SECRET_HEADER` | Не короче 32 латинских букв и цифр; обязателен при включённых вебхуках |
+| `WEBHOOK_SECRET_HEADER` | Не короче 32 латинских букв и цифр; обязателен при включённых вебхуках. Им подписывается каждый запрос |
 
 ### Telegram
 
@@ -62,7 +78,7 @@ sidebar:
 | `IS_TELEGRAM_NOTIFICATIONS_ENABLED` | `true`, чтобы включить |
 | `TELEGRAM_BOT_TOKEN` | Токен бота; обязателен при включённых уведомлениях |
 | `TELEGRAM_BOT_API_ROOT` | Свой Bot API сервер (по умолчанию `https://api.telegram.org`) |
-| `TELEGRAM_BOT_PROXY` | Прокси для запросов к Telegram |
+| `TELEGRAM_BOT_PROXY` | Прокси для запросов к Telegram, например `socks5://proxy:1080` |
 | `TELEGRAM_NOTIFY_USERS` | Чат для событий пользователей: `chatId` или `chatId:threadId` |
 | `TELEGRAM_NOTIFY_NODES` | Чат для событий нод |
 | `TELEGRAM_NOTIFY_SERVICE` | Чат для сервисных событий и ошибок |
@@ -75,13 +91,19 @@ sidebar:
 
 ### Пороговые уведомления
 
-Списки задаются JSON-массивом чисел, например `[60, 80, 95]`, и действуют только при включённом флаге:
+Списки задаются JSON-массивом чисел, например `[60, 80, 95]`, и действуют только при включённом флаге. Если флаг включён, а список пустой или не JSON, панель не запустится.
 
 | Флаг | Список |
 | :--- | :--- |
 | `BANDWIDTH_USAGE_NOTIFICATIONS_ENABLED` | `BANDWIDTH_USAGE_NOTIFICATIONS_THRESHOLD` - проценты лимита трафика |
-| `NOT_CONNECTED_USERS_NOTIFICATIONS_ENABLED` | `NOT_CONNECTED_USERS_NOTIFICATIONS_AFTER_HOURS` - часы без подключения |
-| `EXPIRATION_NOTIFICATIONS_ENABLED` | `EXPIRATION_NOTIFICATIONS` - когда предупреждать об окончании подписки |
+| `NOT_CONNECTED_USERS_NOTIFICATIONS_ENABLED` | `NOT_CONNECTED_USERS_NOTIFICATIONS_AFTER_HOURS` - часы после создания пользователя без подключения |
+| `EXPIRATION_NOTIFICATIONS_ENABLED` | `EXPIRATION_NOTIFICATIONS` - часы относительно окончания подписки: отрицательные до, положительные после, например `[-72, -24, 24]` |
+
+### Файл событий
+
+| Переменная | Описание |
+| :--- | :--- |
+| `NOTIFICATIONS_CONFIG_PATH` | Путь к `notifications-config.yml`, где включаются и выключаются отдельные события. Без него панель ищет файл в стандартных местах, см. [Уведомления](../../features/notifications/#тонкая-настройка-событий) |
 
 ## Docker
 
@@ -89,8 +111,22 @@ sidebar:
 
 | Переменная | Описание |
 | :--- | :--- |
-| `GOWAVE_IMAGE` | Образ панели, по умолчанию `ghcr.io/aaasazan/gowave:latest` |
+| `GOWAVE_IMAGE` | Образ панели, по умолчанию `ghcr.io/aaasazan/gowave:latest`. Для канала dev - `ghcr.io/aaasazan/gowave:dev` |
 | `GOWAVE_COMPOSE_DIR` | Папка с `docker-compose.yml`; используется в подсказке обновления |
 | `POSTGRES_USER`, `POSTGRES_DB` | По умолчанию `gowave` |
 | `POSTGRES_PASSWORD` | Обязателен |
 | `POSTGRES_PORT` | Порт PostgreSQL на `127.0.0.1`, по умолчанию `5432` |
+| `IN_DOCKER` | Ставится образом. По нему панель понимает, что работает в контейнере, и вместо кнопки обновления показывает команду |
+
+Установщик ещё пишет в `.env` переменную `GOWAVE_PROXY` (`caddy`, `nginx` или `external`) - так он помнит, какой прокси настраивал. Сама панель её не читает.
+
+## Чего в GoWave нет
+
+Эти переменные из `.env` Remnawave GoWave молча пропускает, потому что ей не нужны Redis и несколько процессов:
+
+- `REDIS_SOCKET`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD`;
+- `API_INSTANCES`;
+- `EXPORT_TO_STREAM_MAXLEN`;
+- `SHORT_UUID_METHOD` и `SHORT_UUID_CUSTOM_PATTERN`: короткий UUID всегда случайная строка длиной `SHORT_UUID_LENGTH`.
+
+Перенесённый `.env` с ними работает, просто эти строки ни на что не влияют.

@@ -71,13 +71,54 @@ curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/.env.docker.ex
 # Generate the secrets
 sed -i "s/^APP_SECRET=.*/APP_SECRET=$(openssl rand -hex 32)/; s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 24)/" .env
 
-nano .env   # set PANEL_DOMAIN and SUB_PUBLIC_DOMAIN
+nano .env   # set PANEL_DOMAIN and SUB_PUBLIC_DOMAIN, and PANEL_BASE_PATH if you want one
 docker compose up -d
 ```
 
 The panel is published on `127.0.0.1:3000`. Next, set up a [reverse proxy](../reverse-proxy/overview/).
 
-## Updates and CLI
+Every variable in `.env` reaches the panel container. The compose file sets the ports, `APP_SECRET` and the database connection itself: inside the container the panel always listens on `0.0.0.0:3000` and talks to the project's PostgreSQL. The other settings are in the [reference](../../reference/environment/).
+
+## What is inside
+
+The project has two containers on the `gowave-network` network:
+
+| Container | Image | Host ports |
+| :--- | :--- | :--- |
+| `gowave` | `ghcr.io/aaasazan/gowave:latest` (or whatever `GOWAVE_IMAGE` names) | `127.0.0.1:3000` for the panel, `127.0.0.1:3001` for metrics |
+| `gowave-postgres` | `postgres:18` | `127.0.0.1:5432` for migrations, backups and administration |
+
+The panel image is built on Alpine and holds only the `/app/gowave` binary and the web interface. The panel container is locked down more than Docker's defaults:
+
+- it runs as the unprivileged UID/GID `10001`;
+- all capabilities are dropped (`cap_drop: ALL`) and privilege escalation is off (`no-new-privileges`);
+- the root filesystem is read-only. Only `/tmp` is writable: a 128 MB tmpfs that cannot run files.
+
+Because of the last point, a backup larger than 128 MB cannot be restored through the panel in Docker: the upload goes to a temporary file in `/tmp`. Mount your own files, such as [`notifications-config.yml`](../../features/notifications/#per-event-settings), as read-only volumes.
+
+Docker checks the panel's health with a request to `/api/system/health`, and PostgreSQL with `pg_isready`. The panel starts only once the database is ready.
+
+Logs of both containers are rotated: up to 5 files of 20 MB per container. Without that, Docker keeps logs without a limit. See [Logs](../../reference/logs/) for how to read them.
+
+`.env.docker.example` has no `METRICS_ENABLED`, so the metrics port is open in Docker, though only on `127.0.0.1`. Until `METRICS_USER` and `METRICS_PASS` are set, `/metrics` answers 401.
+
+## CLI
+
+One command opens the rescue menu:
+
+```bash
+docker exec -it gowave cli
+```
+
+`rescue` does the same. Flags are passed through, and they do not need `-it`:
+
+```bash
+docker exec gowave cli --list-admins
+```
+
+Run other commands through the binary itself: `docker exec -it gowave /app/gowave <command>`. All commands are in the [CLI reference](../../reference/cli/).
+
+## Updates
 
 Updates run on the server. The panel shows this command when a new version is out:
 
@@ -85,10 +126,4 @@ Updates run on the server. The panel shows this command when a new version is ou
 cd /opt/gowave-docker && docker compose pull && docker compose up -d
 ```
 
-Panel CLI commands run inside the container:
-
-```bash
-docker compose exec gowave /app/gowave rescue --list-admins
-```
-
-Why there is no update button in Docker: see [Updating](../updating/).
+How to switch to the dev channel, and why there is no update button in Docker: see [Updating](../updating/#docker).

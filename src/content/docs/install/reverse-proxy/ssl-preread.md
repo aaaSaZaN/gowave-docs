@@ -123,7 +123,7 @@ systemctl enable --now certbot.timer
 certbot renew --dry-run
 ```
 
-В RHEL-like используйте `systemctl enable --now certbot-renew.timer`. Плагин Cloudflare повторно использует сохранённый файл токена — оставьте его на сервере.
+В RHEL-like используйте `systemctl enable --now certbot-renew.timer`. Плагин Cloudflare повторно использует сохранённый файл токена, поэтому оставьте его на сервере.
 
 ## 2. Разбор по SNI
 
@@ -229,8 +229,8 @@ nginx -t && systemctl reload nginx
 Порт `3000` уже занят панелью, поэтому Go-ноде нужен другой порт управления, например `2222`. Установщик сначала скачивается целиком, его можно просмотреть перед запуском:
 
 ```bash
-curl -fsSLo /tmp/remnanode-install.sh https://raw.githubusercontent.com/aaaSaZaN/remnanode-go/main/install.sh
-sudo NODE_PORT=2222 sh /tmp/remnanode-install.sh
+curl -fsSLo /tmp/gowave-node-install.sh https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh
+sudo NODE_PORT=2222 sh /tmp/gowave-node-install.sh
 ```
 
 В панели добавьте ноду с IP этого сервера и портом `2222`.

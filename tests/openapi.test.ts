@@ -11,7 +11,7 @@ describe('API reference', () => {
 	test('renders every contract operation exactly once, including GoWave extensions', () => {
 		const groups = groupOperations(document);
 		const operations = groups.flatMap((group) => group.operations);
-		expect(operations).toHaveLength(228);
+		expect(operations).toHaveLength(229);
 		expect(new Set(operations.map((operation) => operation.id)).size).toBe(operations.length);
 		expect(groups[0]?.name).toBe('gowave');
 		expect(operations.find((operation) => operation.operationId === 'Login')?.requestBody).toEqual(

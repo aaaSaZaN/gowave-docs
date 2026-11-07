@@ -35,6 +35,7 @@ export default defineConfig({
 					translations: { en: 'Install' },
 					items: [
 						'install/requirements',
+						'install/installer',
 						'install/docker',
 						'install/systemd',
 						{
@@ -62,6 +63,7 @@ export default defineConfig({
 						'features/subscription-rules',
 						'features/templates',
 						'features/template-variables',
+						'features/notifications',
 					],
 				},
 				{
@@ -79,7 +81,7 @@ export default defineConfig({
 				{
 					label: 'Справочник',
 					translations: { en: 'Reference' },
-					items: ['reference/cli', 'reference/environment'],
+					items: ['reference/cli', 'reference/environment', 'reference/logs'],
 				},
 				{
 					label: 'Ещё',

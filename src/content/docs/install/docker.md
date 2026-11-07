@@ -71,13 +71,54 @@ curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/main/.env.docker.ex
 # Секреты генерируются автоматически
 sed -i "s/^APP_SECRET=.*/APP_SECRET=$(openssl rand -hex 32)/; s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 24)/" .env
 
-nano .env   # укажите PANEL_DOMAIN и SUB_PUBLIC_DOMAIN
+nano .env   # укажите PANEL_DOMAIN и SUB_PUBLIC_DOMAIN, при желании PANEL_BASE_PATH
 docker compose up -d
 ```
 
 Панель публикуется на `127.0.0.1:3000`. Дальше настройте [reverse proxy](../reverse-proxy/overview/).
 
-## Обновление и CLI
+Каждая переменная из `.env` попадает в контейнер панели. Порты, `APP_SECRET` и подключение к базе compose-файл задаёт сам: внутри контейнера панель всегда слушает `0.0.0.0:3000` и ходит в PostgreSQL проекта. Остальные настройки описаны в [справочнике](../../reference/environment/).
+
+## Что внутри
+
+Проект состоит из двух контейнеров в сети `gowave-network`:
+
+| Контейнер | Образ | Порты на хосте |
+| :--- | :--- | :--- |
+| `gowave` | `ghcr.io/aaasazan/gowave:latest` (или другой из `GOWAVE_IMAGE`) | `127.0.0.1:3000` - панель, `127.0.0.1:3001` - метрики |
+| `gowave-postgres` | `postgres:18` | `127.0.0.1:5432` - для миграций, бэкапов и администрирования |
+
+Образ панели собран на Alpine, внутри только бинарник `/app/gowave` и веб-интерфейс. Контейнер панели закрыт сильнее, чем по умолчанию:
+
+- работает от непривилегированного пользователя с UID/GID `10001`;
+- все capabilities сброшены (`cap_drop: ALL`), повышение прав запрещено (`no-new-privileges`);
+- корневая файловая система только для чтения. Писать можно лишь в `/tmp`: это tmpfs на 128 МБ без права запуска файлов.
+
+Из-за последнего пункта бэкап больше 128 МБ через панель в Docker не восстановится: загрузка складывается во временный файл в `/tmp`. Свои файлы, например [`notifications-config.yml`](../../features/notifications/#тонкая-настройка-событий), монтируйте томом только для чтения.
+
+Здоровье панели Docker проверяет запросом к `/api/system/health`, PostgreSQL - через `pg_isready`. Панель стартует только после того, как база готова.
+
+Логи обоих контейнеров ротируются: до 5 файлов по 20 МБ на контейнер. Без этого Docker хранит логи без ограничений. Как их читать, написано на странице [Журнал](../../reference/logs/).
+
+В `.env.docker.example` нет `METRICS_ENABLED`, поэтому порт метрик в Docker открыт, но только на `127.0.0.1`. Пока не заданы `METRICS_USER` и `METRICS_PASS`, `/metrics` отвечает 401.
+
+## CLI
+
+Меню восстановления открывается одной командой:
+
+```bash
+docker exec -it gowave cli
+```
+
+`rescue` - то же самое. Флаги передаются как есть, `-it` для них не нужен:
+
+```bash
+docker exec gowave cli --list-admins
+```
+
+Остальные команды запускайте через сам бинарник: `docker exec -it gowave /app/gowave <команда>`. Все команды - в [справочнике CLI](../../reference/cli/).
+
+## Обновление
 
 Обновление выполняется на сервере - панель покажет эту команду, когда выйдет новая версия:
 
@@ -85,10 +126,4 @@ docker compose up -d
 cd /opt/gowave-docker && docker compose pull && docker compose up -d
 ```
 
-CLI-команды панели запускаются внутри контейнера:
-
-```bash
-docker compose exec gowave /app/gowave rescue --list-admins
-```
-
-Почему нет кнопки обновления в Docker - в разделе [Обновление](../updating/).
+Как перейти на канал dev и почему в Docker нет кнопки обновления - в разделе [Обновление](../updating/#docker).

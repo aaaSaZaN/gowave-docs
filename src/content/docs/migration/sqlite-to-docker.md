@@ -2,7 +2,7 @@
 title: С SQLite на Docker
 description: Перевод установки GoWave с SQLite в Docker с PostgreSQL одной командой.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 Перевод установки с SQLite в Docker одной командой. Нужен Docker с плагином compose; запускать от root на сервере панели:
@@ -31,4 +31,16 @@ ln -sf /opt/gowave/gowave-server /usr/local/bin/gowave
 systemctl enable --now gowave
 ```
 
-Флаги: `--dir <путь>` (папка проекта), `--image <образ>`, `--from <путь>` (папка старой установки), `--yes` (без подтверждения).
+Изменения, сделанные в панели уже после переезда, в SQLite не попадут.
+
+Путь панели (`PANEL_BASE_PATH`), учётные данные и адреса подписок переезд сохраняет. В `.env` нового проекта записывается `GOWAVE_COMPOSE_DIR`, чтобы панель показывала правильную команду обновления.
+
+## Флаги
+
+| Флаг | Что делает |
+| :--- | :--- |
+| `--dir <путь>` | Папка проекта Docker, по умолчанию `/opt/gowave-docker` |
+| `--image <образ>` | Образ панели, по умолчанию `ghcr.io/aaasazan/gowave:latest`. Для канала dev - `ghcr.io/aaasazan/gowave:dev` |
+| `--from <путь>` | Папка текущей установки, по умолчанию та, где лежит бинарник |
+| `--from-upstream [dsn]` | Копировать в новый PostgreSQL не SQLite GoWave, а базу Remnawave. Без DSN она находится по `/opt/remnawave/.env`. Так установщик переносит Remnawave сразу в Docker |
+| `--yes` | Не спрашивать подтверждение |

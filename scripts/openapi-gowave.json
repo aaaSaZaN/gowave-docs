@@ -234,9 +234,15 @@
       "get": {
         "operationId": "CheckPanelUpdate",
         "summary": "Check panel updates",
-        "description": "Compares the running version with the latest GoWave release on GitHub. The body is not wrapped in `response`. In Docker `canAutoUpdate` is `false` and `updateCommand` holds the command to run on the server.",
-        "tags": ["gowave"],
-        "security": [{ "bearerAuth": [] }],
+        "description": "Compares the running version with the newest build of a channel on GitHub. The body is not wrapped in `response`. Answers come from a cache unless `force` is set. In Docker `canAutoUpdate` is `false` and `updateCommand` holds the command to run on the server; a native install without the root update helper also gets `updateCommand`, the installer command.",
+        "tags": [
+          "gowave"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -244,42 +250,323 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["currentVersion", "latestVersion", "changelog", "hasUpdate", "isDocker", "canAutoUpdate"],
+                  "required": [
+                    "currentVersion",
+                    "latestVersion",
+                    "changelog",
+                    "hasUpdate",
+                    "isDocker",
+                    "canAutoUpdate"
+                  ],
                   "properties": {
-                    "currentVersion": { "type": "string" },
-                    "latestVersion": { "type": "string" },
-                    "changelog": { "type": "string", "description": "Release notes in Markdown." },
-                    "hasUpdate": { "type": "boolean" },
-                    "isDocker": { "type": "boolean" },
-                    "canAutoUpdate": { "type": "boolean" },
-                    "updateCommand": { "type": "string" }
+                    "currentVersion": {
+                      "type": "string"
+                    },
+                    "latestVersion": {
+                      "type": "string"
+                    },
+                    "changelog": {
+                      "type": "string",
+                      "description": "Release notes in Markdown."
+                    },
+                    "hasUpdate": {
+                      "type": "boolean",
+                      "description": "`true` when the checked build differs from the running one, or when `targetChannel` differs from `channel`."
+                    },
+                    "isDocker": {
+                      "type": "boolean"
+                    },
+                    "canAutoUpdate": {
+                      "type": "boolean"
+                    },
+                    "updateCommand": {
+                      "type": "string"
+                    },
+                    "channel": {
+                      "type": "string",
+                      "enum": [
+                        "stable",
+                        "dev"
+                      ],
+                      "description": "Channel of the running build."
+                    },
+                    "targetChannel": {
+                      "type": "string",
+                      "enum": [
+                        "stable",
+                        "dev"
+                      ],
+                      "description": "Channel that was checked."
+                    },
+                    "checkedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "When GitHub was last asked."
+                    }
                   }
                 }
               }
             }
           },
-          "502": { "description": "GitHub did not answer. The body is plain text." }
-        }
+          "502": {
+            "description": "GitHub did not answer, or the dev channel has no build right now."
+          },
+          "400": {
+            "description": "Unknown channel."
+          }
+        },
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "description": "`stable` or `dev`. Defaults to the channel of the running build; another value checks before a channel switch.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "stable",
+                "dev"
+              ]
+            }
+          },
+          {
+            "name": "force",
+            "in": "query",
+            "required": false,
+            "description": "`1` or `true` asks GitHub again instead of answering from the cache.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true"
+              ]
+            }
+          }
+        ]
       }
     },
     "/api/system/updates/apply": {
       "post": {
         "operationId": "ApplyPanelUpdate",
         "summary": "Update the panel",
-        "description": "Systemd installs only. Downloads the latest release binary and web interface, replaces them and exits two seconds after answering; systemd starts the new version (`Restart=always`).",
-        "tags": ["gowave"],
-        "security": [{ "bearerAuth": [] }],
+        "description": "Native installs with the root update helper only. The panel writes an update request to `/run/gowave`; `gowave-update.service` downloads the newest build of the channel, checks `SHA256SUMS`, installs it, keeps the previous binary as `gowave-server.bak` and restarts the panel. Poll `GET /api/system/updates/status` for progress. An optional `channel` switches between stable and dev.",
+        "tags": [
+          "gowave"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Files replaced, the panel is restarting.",
+            "description": "Request accepted; the root helper takes it from here.",
             "content": {
               "application/json": {
-                "schema": { "type": "object", "properties": { "success": { "type": "boolean" } } }
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "channel": {
+                      "type": "string",
+                      "enum": [
+                        "stable",
+                        "dev"
+                      ]
+                    },
+                    "requestedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
               }
             }
           },
-          "400": { "description": "Running in Docker. The body is plain text with the update command." },
-          "500": { "description": "Download or replacement failed; the old version keeps running. The body is plain text." }
+          "400": {
+            "description": "Running in Docker (the message holds the update command), an unknown channel or an invalid body."
+          },
+          "409": {
+            "description": "The root update helper is not installed. The message holds the installer command."
+          },
+          "500": {
+            "description": "The update request could not be written."
+          }
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "stable",
+                      "dev"
+                    ],
+                    "description": "Target channel. Defaults to the channel of the running build."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/system/updates/status": {
+      "get": {
+        "operationId": "GetPanelUpdateStatus",
+        "summary": "Panel update progress",
+        "description": "Progress of the latest in-panel update as reported by the root helper. `status` is `null` when no update has run since the machine started. The body is not wrapped in `response`.",
+        "tags": [
+          "gowave"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "currentVersion",
+                    "channel",
+                    "helperInstalled",
+                    "requestPending",
+                    "serverTime",
+                    "status"
+                  ],
+                  "properties": {
+                    "currentVersion": {
+                      "type": "string"
+                    },
+                    "channel": {
+                      "type": "string",
+                      "enum": [
+                        "stable",
+                        "dev"
+                      ]
+                    },
+                    "helperInstalled": {
+                      "type": "boolean"
+                    },
+                    "requestPending": {
+                      "type": "boolean",
+                      "description": "The request is still waiting for the root helper."
+                    },
+                    "serverTime": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "statusError": {
+                      "type": "string",
+                      "description": "The status file exists but could not be read."
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "state": {
+                              "type": "string",
+                              "enum": [
+                                "running",
+                                "done",
+                                "failed"
+                              ]
+                            },
+                            "step": {
+                              "type": "string",
+                              "enum": [
+                                "starting",
+                                "download",
+                                "verify",
+                                "frontend",
+                                "binary",
+                                "service",
+                                "restart",
+                                "done"
+                              ]
+                            },
+                            "message": {
+                              "type": "string"
+                            },
+                            "error": {
+                              "type": "string"
+                            },
+                            "progress": {
+                              "type": "integer",
+                              "description": "Overall progress, percent."
+                            },
+                            "downloaded": {
+                              "type": "integer"
+                            },
+                            "total": {
+                              "type": "integer"
+                            },
+                            "file": {
+                              "type": "string"
+                            },
+                            "channel": {
+                              "type": "string"
+                            },
+                            "fromVersion": {
+                              "type": "string"
+                            },
+                            "installedVersion": {
+                              "type": "string"
+                            },
+                            "startedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "finishedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "log": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "time": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "level": {
+                                    "type": "string"
+                                  },
+                                  "message": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

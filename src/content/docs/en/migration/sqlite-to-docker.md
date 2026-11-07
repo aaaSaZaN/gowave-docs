@@ -2,7 +2,7 @@
 title: SQLite to Docker
 description: Moving a GoWave SQLite installation to Docker with PostgreSQL in one command.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 One command moves an SQLite installation into Docker. It needs Docker with the compose plugin; run it as root on the panel server:
@@ -31,4 +31,16 @@ ln -sf /opt/gowave/gowave-server /usr/local/bin/gowave
 systemctl enable --now gowave
 ```
 
-Flags: `--dir <path>` (project directory), `--image <image>`, `--from <path>` (old installation directory), `--yes` (no confirmation).
+Changes made in the panel after the move are not copied back to SQLite.
+
+The move keeps the dashboard path (`PANEL_BASE_PATH`), credentials and subscription URLs. The new project's `.env` gets `GOWAVE_COMPOSE_DIR`, so the panel shows the right update command.
+
+## Flags
+
+| Flag | What it does |
+| :--- | :--- |
+| `--dir <path>` | Docker project directory, `/opt/gowave-docker` by default |
+| `--image <image>` | Panel image, `ghcr.io/aaasazan/gowave:latest` by default. For the dev channel, `ghcr.io/aaasazan/gowave:dev` |
+| `--from <path>` | Current installation directory, by default the one holding the binary |
+| `--from-upstream [dsn]` | Copy the Remnawave database into the new PostgreSQL instead of GoWave's SQLite. Without a DSN it is found through `/opt/remnawave/.env`. This is how the installer moves Remnawave straight into Docker |
+| `--yes` | Do not ask for confirmation |

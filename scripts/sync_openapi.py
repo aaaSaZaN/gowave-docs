@@ -68,6 +68,38 @@ for schema in (
 ):
     schema["properties"]["yandex"]["description"] = YANDEX
 
+# Response rule headers: GoWave stores and returns an object; the upstream
+# key/value array is still accepted in requests and converted.
+HEADERS_OBJECT = {
+    "type": "object",
+    "additionalProperties": {"type": "string", "minLength": 1},
+    "description": (
+        "GoWave extension: header names mapped to values, for example `{\"providerid\": \"12345\"}`. "
+        "Names are case-insensitive; a repeated name keeps the last value."
+    ),
+}
+
+
+def patch_rule_headers(node, in_request):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key == "responseModifications" and isinstance(value, dict) and "headers" in value.get("properties", {}):
+                legacy = value["properties"]["headers"]
+                if in_request:
+                    legacy = dict(legacy, description="Upstream array format, accepted for compatibility and converted to an object.")
+                    value["properties"]["headers"] = {"anyOf": [HEADERS_OBJECT, legacy]}
+                else:
+                    value["properties"]["headers"] = HEADERS_OBJECT
+            else:
+                patch_rule_headers(value, in_request or key == "requestBody")
+    elif isinstance(node, list):
+        for item in node:
+            patch_rule_headers(item, in_request)
+
+
+for path in ("/api/subscription-settings", "/api/system/testers/srr-matcher"):
+    patch_rule_headers(spec["paths"][path], False)
+
 json.dump(spec, open(target, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 print(
     f"wrote {os.path.normpath(target)} (contract {contract}, {len(spec.get('paths', {}))} paths, "
