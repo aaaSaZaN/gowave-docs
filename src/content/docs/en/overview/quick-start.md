@@ -47,7 +47,7 @@ sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/
 
 Once the service starts, the node connects to the panel, applies the profile, and starts Xray. The node status will change to "Online".
 
-If the node runs on the same machine as the panel, the [GoWave installer](../../install/installer/#локальная-нода) can set it up locally on port `2222`.
+If the node runs on the same machine as the panel, the [GoWave installer](../../install/installer/#local-node) can set it up locally on port `2222`.
 
 ## Step 5. Host
 
