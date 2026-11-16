@@ -12,13 +12,21 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'GoWave',
-			logo: { src: './src/assets/logo.svg' },
+			logo: {
+				light: './src/assets/logo-light.svg',
+				dark: './src/assets/logo-dark.svg',
+				alt: 'GoWave',
+				replacesTitle: true,
+			},
 			defaultLocale: 'root',
 			locales: {
 				root: { label: 'Русский', lang: 'ru' },
 				en: { label: 'English', lang: 'en' },
 			},
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/aaaSaZaN/gowave' }],
+			social: [
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/aaaSaZaN/gowave' },
+				{ icon: 'telegram', label: 'Telegram', href: 'https://t.me/+XDyuXROASUg5MTAy' },
+			],
 			editLink: { baseUrl: 'https://github.com/aaaSaZaN/gowave-docs/edit/main/' },
 			customCss: ['./src/styles/custom.css'],
 			components: {

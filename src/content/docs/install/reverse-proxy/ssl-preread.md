@@ -44,9 +44,42 @@ sidebar:
 
 ## 1. Сертификат панели
 
-Выполняйте команды от root. Замените `panel.example.com` на домен панели. DNS-01 подтверждает владение доменом через TXT-запись и не требует входящих соединений на порты 80 и 443.
+Выполняйте команды от root. Замените `panel.example.com` на домен панели.
+
+### HTTP-01 (webroot / standalone)
+
+Стандартный способ проверки владения доменом по HTTP. Направьте A/AAAA-записи домена на этот сервер, откройте порт 80/TCP в файрволе и убедитесь, что он свободен.
+
+Debian / Ubuntu:
+
+```bash
+apt update
+apt install certbot
+```
+
+RHEL-like (предварительно подключите [EPEL](https://docs.fedoraproject.org/en-US/epel/getting-started/)):
+
+```bash
+dnf install certbot
+```
+
+Убедитесь, что порт 80 свободен:
+
+```bash
+ss -ltnp 'sport = :80'
+```
+
+Выпустите сертификат:
+
+```bash
+certbot certonly --standalone --preferred-challenges http --cert-name panel.example.com -d panel.example.com
+```
+
+В режиме `--standalone` Certbot временно поднимает встроенный веб-сервер на 80 порту для прохождения проверки. Если на 80 порту уже работает веб-сервер с настроенной директорией webroot, можно использовать `--webroot -w /var/www/...`. В данной схеме Nginx порт 80 не слушает, поэтому Certbot сможет без конфликтов автоматически продлевать сертификат по таймеру. Отключите стандартный сайт Nginx и другие конфиги, если они слушают порт 80.
 
 ### DNS-01 с автоматическим продлением
+
+DNS-01 подтверждает владение доменом через TXT-запись и не требует входящих соединений на порты 80 и 443 (подходит, если порт 80 закрыт провайдером или недоступен).
 
 Пример для домена с DNS в Cloudflare. Для другого провайдера установите его [DNS-плагин Certbot](https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins) или используйте ручной способ ниже.
 
@@ -84,24 +117,13 @@ certbot certonly --dns-cloudflare \
 
 ### Ручной DNS-01
 
-Если у провайдера нет API-плагина, установите `certbot` через `apt install certbot` или `dnf install certbot` (с подключённым EPEL) и выполните:
+Если у провайдера нет API-плагина и порт 80 недоступен, установите `certbot` через `apt install certbot` или `dnf install certbot` (с подключённым EPEL) и выполните:
 
 ```bash
 certbot certonly --manual --preferred-challenges dns --cert-name panel.example.com -d panel.example.com
 ```
 
 Certbot покажет имя TXT-записи `_acme-challenge.panel.example.com` и её значение. Добавьте запись у DNS-провайдера, дождитесь её появления в публичном DNS и нажмите Enter в Certbot. После проверки запись можно удалить. Без authentication hooks при каждом продлении потребуется повторять ручную проверку.
-
-### Альтернатива: HTTP-01
-
-Обычный способ также доступен. Направьте A/AAAA-записи домена на этот сервер, откройте порт 80/TCP в файрволе и проверьте, что он свободен:
-
-```bash
-ss -ltnp 'sport = :80'
-certbot certonly --standalone --preferred-challenges http --cert-name panel.example.com -d panel.example.com
-```
-
-Отключите стандартный сайт Nginx и другие конфиги, которые слушают порт 80. Certbot временно занимает этот порт для проверки. Конфиги ниже обслуживают только HTTPS.
 
 ### Продление
 
@@ -250,7 +272,7 @@ Xray слушает только `127.0.0.1:9443` и принимает PROXY pr
     "decryption": "none"
   },
   "streamSettings": {
-    "network": "tcp",
+    "network": "raw",
     "security": "reality",
     "realitySettings": {
       "target": "www.example.com:443",

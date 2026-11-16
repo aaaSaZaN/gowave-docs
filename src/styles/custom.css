@@ -9,3 +9,67 @@
 	--sl-color-accent: #007c91;
 	--sl-color-accent-high: #00414d;
 }
+
+/* Header social icons: larger GitHub and Telegram logos grouped neatly */
+.social-icons {
+	gap: 0.65rem !important;
+	align-items: center;
+}
+
+.social-icons a {
+	padding: 0.35rem;
+	color: var(--sl-color-gray-2);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.5rem;
+	transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.social-icons a:hover {
+	color: var(--sl-color-white);
+	transform: scale(1.1);
+}
+
+.social-icons a svg {
+	width: 1.55rem !important;
+	height: 1.55rem !important;
+	font-size: 1.55rem !important;
+}
+
+/* Hero title: GoWave vector icon next to the title text (only hero pages, not regular docs h1) */
+h1[data-page-title]::before {
+	content: '';
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	margin-inline-end: 0.28em;
+	vertical-align: -0.14em;
+	background: url('../assets/icon.svg') center / contain no-repeat;
+}
+
+/* Hero action buttons */
+.hero .actions {
+	align-items: center;
+	gap: 0.85rem 1.25rem;
+}
+
+.hero .actions a.minimal {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-weight: 500;
+	color: var(--sl-color-gray-2);
+	transition: color 0.15s ease;
+}
+
+.hero .actions a.minimal:hover {
+	color: var(--sl-color-white);
+}
+
+.hero .actions a.minimal svg {
+	width: 1.35rem !important;
+	height: 1.35rem !important;
+	font-size: 1.35rem !important;
+}
+

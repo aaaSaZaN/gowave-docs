@@ -5,88 +5,167 @@ sidebar:
   order: 1
 ---
 
-GoWave Node ([gowave-node](https://github.com/aaaSaZaN/gowave-node)) manages the Xray core on the server that carries user traffic. It is a Go implementation of the Remnawave node. The panel protocol is compatible with Remnawave Node 3.4.2, so the node connects to both GoWave and the original Remnawave panel. Xray runs as a separate process; Node.js and Docker are not needed.
+GoWave Node ([gowave-node](https://github.com/aaaSaZaN/gowave-node)) manages the Xray core on the server carrying user traffic. It is a fast and lightweight Go implementation of the node: compatible with the Remnawave Node 3.4.2 protocol, it connects to both GoWave and the original Remnawave panel. Xray runs as a separate process; Node.js and Docker are not needed.
 
-The project used to be called remnanode-go, with a `remnanode` command. The installer moves old installs to the new name by itself, see [below](#moving-from-an-old-remnanode-install).
+The project was previously named remnanode-go, and the command was `remnanode`. The installer migrates existing installations automatically.
 
 ## Requirements
 
-- Linux. Architectures: `amd64`, `386`, `arm64`, `armv7`, `armv6`, `armv5`, `riscv64`, `mips`, `mipsle`, `mips64`, `mips64le`. Server tests run on `amd64` and `arm64`; router builds are not certified.
-- Service manager: systemd, OpenRC (Alpine), procd (OpenWrt) or Entware init.d (Keenetic and other opkg systems).
+- Linux. Architectures: `amd64`, `386`, `arm64`, `armv7`, `armv6`, `armv5`, `riscv64`, `mips`, `mipsle`, `mips64`, `mips64le`. Server verification passes on `amd64` and `arm64`; other router builds are not certified.
+- Service manager: systemd, OpenRC (Alpine), procd (OpenWrt), or Entware (Keenetic and other opkg systems).
 - `curl` or `wget`, and one of `sha256sum`, `shasum`, `openssl`.
 - Root access.
-- Traffic filters in plugins need `nft`, `ss` (iproute2) and `CAP_NET_ADMIN`.
+- Traffic filters in plugins require `nft`, `ss` (iproute2), and `CAP_NET_ADMIN`.
 
 ## Install from the panel
 
-When you add a node, the panel shows a ready command with the `SECRET_KEY` and the node port filled in. Copy it with the button and run it on the node server.
+When adding a node, the panel displays a ready-to-run command with the `SECRET_KEY` and node port prefilled. Copy and run it on the node server.
 
-If the panel runs on the same server, the [GoWave installer](../../installer/#local-node) can install the node as well.
+If the panel is hosted on the same server, the [GoWave installer](../../installer/#local-node) can deploy the node automatically.
 
-## Install by hand
+## Quick script installation
 
-1. Add the node in the panel and copy its `SECRET_KEY` from the node settings.
-2. On the node server run:
+1. Add the node in the panel and copy its `SECRET_KEY` from the node configuration drawer.
+2. On the node server, run:
 
    ```bash
    sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"
    ```
 
-   Without `curl`, use `sudo sh -c "$(wget -qO- <same URL>)"`.
+   Without `curl`, use `sudo sh -c "$(wget -qO- https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"`.
 
-3. The installer asks for `SECRET_KEY`. The management port defaults to `3000` and must match the node port in the panel. Pass another port in `NODE_PORT`.
+3. The installer prompts for `SECRET_KEY` and `NODE_PORT` (default: `3000`). The port must match the node settings in the panel.
 
-Without prompts, for example from a script:
+Non-interactive automated installation (e.g. for provisioning scripts):
 
 ```bash
 sudo SECRET_KEY=... NODE_PORT=2222 sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"
 ```
 
-If another program holds the port, the installer stops before it changes anything. A fresh install is done once the management service answers (up to 30 seconds), so you can configure the node in the panel right after. Updates and migrations wait up to two minutes for Xray to start and bring back the previous service if it does not.
-
-The same command updates an installed node and moves a node out of Docker, see [From the Docker node to the Go node](../../../migration/docker-node/).
+If the requested port is already in use, the installer halts before making any modifications. A fresh node is ready once the management daemon responds (within 30 seconds), so panel setup can proceed immediately. During updates or migrations, the script waits up to 2 minutes for Xray readiness and rolls back if startup fails.
 
 ### Installer options
 
-| Variable | Sets |
+| Variable | Description |
 | :--- | :--- |
-| `SECRET_KEY` | Key from the node settings. Used only when the node is not configured yet |
-| `NODE_PORT` | Management port, `3000` by default. Also only for a node that is not configured yet |
-| `GOWAVE_NODE_VERSION` | A release tag instead of the latest, for example `v1.0.6-rc.1` to try a candidate. If the tag does not exist, the installer changes nothing |
-| `GOWAVE_NODE_INIT` | Service manager when detection gets it wrong: `systemd`, `openrc`, `procd` or `entware` |
+| `SECRET_KEY` | Node secret key from panel settings. Used only on fresh unconfigured installs |
+| `NODE_PORT` | Management port, defaults to `3000`. Must match the node configuration in the panel |
+| `GOWAVE_NODE_VERSION` | Specific release tag instead of latest (e.g. `v1.1.5` or a pre-release). The script aborts if the tag does not exist |
+| `GOWAVE_NODE_INIT` | Force specific init system detection: `systemd`, `openrc`, `procd`, or `entware` |
 
-The old `REMNANODE_` variables are still accepted; the `GOWAVE_NODE_` ones win.
+Legacy environment variables with the `REMNANODE_` prefix are accepted for backward compatibility; `GOWAVE_NODE_` variables take precedence.
 
-## What gets installed
+## Installing custom Xray binaries
 
-A fresh install lives in `/opt/gowave-node`. The service is `gowave-node` and runs as root, like the Docker node: Xray has to reach whatever the panel configuration points to, such as sockets in `/dev/shm` shared with nginx, other services' certificates and ports below 1024. If you want isolation, add your own systemd override.
+By default, `gowave-node` installs and maintains the standard Xray core (`rw-core`). You can also install custom builds, forks, or explicit releases via CLI or through the GoWave web panel.
 
-The installer also puts the ASN index for plugins in `/usr/local/share/asn/asn-prefixes.zip`.
+### Via node CLI
 
-## Entware
+The `gowave-node core install` command downloads releases from any public GitHub repository:
 
-On Entware the installer writes `/opt/etc/init.d/S99gowave-node`. `rc.unslung` starts it at boot, and the script brings the node back 3 seconds after it exits. Files live in `/opt`, commands in `/opt/bin`, and the runtime directory is `/tmp/gowave-node`.
+```bash
+gowave-node core install --repo <owner/repo> --version <tag> -y
+```
 
-Things to know:
+Examples:
 
-- node output does not go to the system log; read it with `gowave-node logs`;
-- updates from the panel need systemd, so update with `gowave-node update`;
-- open `NODE_PORT` and the Xray inbound ports for the WAN interface in the router firewall.
+```bash
+# Install a specific release from the official XTLS/Xray-core repo
+gowave-node core install --repo XTLS/Xray-core --version v26.7.28 -y
 
-## Moving from an old remnanode install
+# Install a custom fork or community build
+gowave-node core install --repo owner/custom-xray --version v1.0.0 -y
+```
 
-If the server runs the node under its old name (`remnanode`), the installer switches it to the `gowave-node` service automatically:
+Repository requirements:
+- GitHub Releases in the target repository must include compiled `.zip` archives or binaries matching your server architecture (e.g. `Xray-linux-64.zip` or arm64 archives).
+- The node extracts the binary, verifies execution against the current configuration, and activates the core only after passing validation.
 
-- the install directory stays the same, for example `/opt/remnanode`, so certificate paths and a custom core keep working;
-- the secret, port and other `.env` settings are kept, and old variable names are translated;
-- `remnanode` and `remnanode-go` stay as links to `gowave-node`;
-- the old service is turned off only after the new release is downloaded and verified. If the switch fails, the previous service and `.env` come back.
+### Via GoWave web panel
 
-If the old node lived in a non-standard directory, set `GOWAVE_NODE_LEGACY_INSTALL_DIR` (systemd finds it from the service's `WorkingDirectory`). Do not change the install directory during the move. Review your own unit overrides and s6 definitions separately; the installer does not rename them.
+In the GoWave web interface:
+1. Open the node card and click the current **Xray Core** version.
+2. Select a release or paste a direct HTTPS download URL to an archive or binary.
 
-## Manual install without the installer
+Example direct links:
+```text
+https://github.com/XTLS/Xray-core/releases/download/v26.7.28/Xray-linux-64.zip
+```
+Or a direct link to a raw binary build:
+```text
+https://example.com/builds/xray-linux-64
+```
 
-`gowave-node-linux-<architecture>` binaries, `checksums.txt` and `asn-prefixes.zip` are in the [gowave-node releases](https://github.com/aaaSaZaN/gowave-node/releases). Put the binary in `/opt/gowave-node`, create `.env` as described in [configuration](../configuration/) and a systemd service:
+The panel instructs the node to download the asset over HTTPS, validate it, and activate the core without dropping connections.
+
+### Resetting to the default core
+
+To return to the default managed core (`rw-core`):
+
+```bash
+gowave-node core reset
+```
+
+This clears custom overrides, restores the standard `rw-core` binary, and restarts the service.
+
+### Node update persistence
+
+Running `gowave-node update` updates only the node daemon binary.
+
+Your active Xray core (including custom builds installed with `--repo` or via direct URLs) is **never overwritten or reset** during node updates.
+
+## Connecting to the panel
+
+The node does not initiate outbound connections to the panel. The `gowave-node` daemon listens on `NODE_PORT` (default 3000), and the panel connects to `https://<node-ip>:<node-port>`.
+
+The connection is secured with mutual TLS (mTLS over TLS 1.3) and RS256 JWT tokens. Certificates and keys are packed inside `SECRET_KEY`.
+
+### Remnawave compatibility
+
+The node implements the Remnawave Node API protocol version 3.4.2:
+- Status and version checks return protocol version `3.4.2` to pass Remnawave's compatibility check.
+- Users synchronize sequentially: the panel issues separate requests for each user (`add-user` and `remove-user`).
+
+### GoWave advantages
+
+When paired with GoWave, connection efficiency is increased:
+- The panel sends the `X-Better-One: true` header. The node reports its true release version and the `go` runtime type. The panel shows exact version details and allows one-click updates.
+- Bulk synchronization: GoWave syncs users in batches of up to 1,000 users per request via `add-users` and `remove-users`, preventing queue saturation on node restarts.
+- Decoupled polling: health checks run every 15 seconds (up to 32 concurrent checks), while stats polling runs every 5 seconds, evenly distributed over the interval. This protects the database and network from traffic spikes. If recording usage temporarily fails, the node retries on the next poll without lost bytes.
+
+## Installed components
+
+- Installation directory: `/opt/gowave-node`.
+- Systemd service: `gowave-node.service` (runs as `root` because Xray requires access to sockets in `/dev/shm`, external certificates, and low ports below 1024).
+- ASN prefix index for plugins: `/usr/local/share/asn/asn-prefixes.zip`.
+- Symlinks in `/usr/local/bin`: `gowave-node` and `xlogs`.
+
+## Entware (routers)
+
+On Entware, the installer creates `/opt/etc/init.d/S99gowave-node`. `rc.unslung` launches it at boot, and the script restarts the node 3 seconds after an unexpected exit. Files reside in `/opt`, commands in `/opt/bin`, and runtime data in `/tmp/gowave-node`.
+
+Key points:
+- Node output bypasses the router system log; read it with `gowave-node logs`.
+- Panel-triggered updates require systemd; on Entware, update via CLI with `gowave-node update`.
+- Open `NODE_PORT` and inbound Xray ports in the router firewall on the WAN interface.
+
+## Migrating from legacy remnanode
+
+If the server previously ran `remnanode`, the installer transitions to `gowave-node` automatically:
+- The installation directory is retained (e.g. `/opt/remnanode`) so custom core and certificate paths remain valid.
+- Credentials, ports, and configuration from `.env` are preserved and translated to new variable names.
+- `remnanode` and `remnanode-go` commands remain as symlinks to `gowave-node`.
+- The old service is disabled only after the new binary is verified.
+
+If the previous node used a non-standard location, define `GOWAVE_NODE_LEGACY_INSTALL_DIR`.
+
+## Manual installation without the script
+
+Binaries (`gowave-node-linux-<arch>`) and `checksums.txt` are available on the [gowave-node releases](https://github.com/aaaSaZaN/gowave-node/releases) page.
+
+1. Place the binary at `/opt/gowave-node/gowave-node` and grant execute permissions: `chmod +x /opt/gowave-node/gowave-node`.
+2. Create `/opt/gowave-node/.env` as described in [configuration](../configuration/).
+3. Create the systemd service file `/etc/systemd/system/gowave-node.service`:
 
 ```ini
 [Unit]
@@ -110,11 +189,12 @@ LimitNOFILE=1048576
 WantedBy=multi-user.target
 ```
 
-Then install the core and start the service:
+4. Install the Xray core and configure system symlinks:
 
 ```bash
 /opt/gowave-node/gowave-node core install -y
+ln -sfn /opt/gowave-node/gowave-node /usr/local/bin/gowave-node
+ln -sfn /opt/gowave-node/gowave-node /usr/local/bin/xlogs
+systemctl daemon-reload
 systemctl enable --now gowave-node
 ```
-
-The binary does not create links in `PATH` by itself. To run `gowave-node` from anywhere, add one: `ln -s /opt/gowave-node/gowave-node /usr/local/bin/gowave-node`.

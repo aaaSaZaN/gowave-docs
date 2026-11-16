@@ -44,9 +44,42 @@ Replace `panel.example.com` with the panel domain in every example.
 
 ## 1. Panel certificate
 
-Run these commands as root. Replace `panel.example.com` with the panel domain. DNS-01 verifies ownership through a TXT record and does not require inbound ports 80 or 443.
+Run these commands as root. Replace `panel.example.com` with the panel domain.
+
+### HTTP-01 (webroot / standalone)
+
+The standard method for domain validation via HTTP. Point the domain's A/AAAA records at this server, open port 80/TCP in the firewall, and verify that it is free.
+
+Debian / Ubuntu:
+
+```bash
+apt update
+apt install certbot
+```
+
+RHEL-like (enable [EPEL](https://docs.fedoraproject.org/en-US/epel/getting-started/) first):
+
+```bash
+dnf install certbot
+```
+
+Make sure port 80 is free:
+
+```bash
+ss -ltnp 'sport = :80'
+```
+
+Issue the certificate:
+
+```bash
+certbot certonly --standalone --preferred-challenges http --cert-name panel.example.com -d panel.example.com
+```
+
+In `--standalone` mode, Certbot temporarily binds port 80 to complete the challenge. If you already have a web server running on port 80 with a configured webroot directory, you can use `--webroot -w /var/www/...`. In this guide's setup, Nginx does not listen on port 80, so Certbot will be able to automatically renew the certificate via timer without conflicts. Disable the default Nginx site and any other configs that listen on port 80.
 
 ### DNS-01 with automatic renewal
+
+DNS-01 verifies ownership through a TXT record and does not require inbound ports 80 or 443 (useful if port 80 is blocked by your ISP or host).
 
 The example uses Cloudflare DNS. For another provider, install its [Certbot DNS plugin](https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins) or use the manual method below.
 
@@ -84,24 +117,13 @@ certbot certonly --dns-cloudflare \
 
 ### Manual DNS-01
 
-If your provider has no API plugin, install `certbot` with `apt install certbot` or `dnf install certbot` (with EPEL enabled) and run:
+If your provider has no API plugin and port 80 is unavailable, install `certbot` with `apt install certbot` or `dnf install certbot` (with EPEL enabled) and run:
 
 ```bash
 certbot certonly --manual --preferred-challenges dns --cert-name panel.example.com -d panel.example.com
 ```
 
 Certbot prints the TXT record name `_acme-challenge.panel.example.com` and its value. Add the record in your DNS provider's control panel, wait until it is publicly visible, then press Enter in Certbot. Remove the record after verification. Without authentication hooks, this method requires repeating the manual challenge for each renewal.
-
-### Alternative: HTTP-01
-
-The standard method remains available. Point the domain's A/AAAA records at this server, open port 80/TCP in the firewall and make sure it is free:
-
-```bash
-ss -ltnp 'sport = :80'
-certbot certonly --standalone --preferred-challenges http --cert-name panel.example.com -d panel.example.com
-```
-
-Disable the default Nginx site and any other configuration that listens on port 80. Certbot temporarily binds that port to complete the challenge. The configs below serve HTTPS only.
 
 ### Renewal
 
