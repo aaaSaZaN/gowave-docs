@@ -85,7 +85,7 @@ The project has two containers on the `gowave-network` network:
 
 | Container | Image | Host ports |
 | :--- | :--- | :--- |
-| `gowave` | `ghcr.io/aaasazan/gowave:latest` (or whatever `GOWAVE_IMAGE` names) | `127.0.0.1:3000` for the panel, `127.0.0.1:3001` for metrics |
+| `gowave` | `ghcr.io/aaasazan/gowave:latest`, tag `:dev` for the dev channel | `127.0.0.1:3000` for the panel, `127.0.0.1:3001` for metrics |
 | `gowave-postgres` | `postgres:18` | `127.0.0.1:5432` for migrations, backups and administration |
 
 The panel image is built on Alpine and holds only the `/app/gowave` binary and the web interface. The panel container is locked down more than Docker's defaults:

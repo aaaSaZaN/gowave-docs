@@ -80,6 +80,7 @@ const text = {
 							</td>
 							<td>
 								{number(row.remnawave.p50, 1)} / {number(row.remnawave.p99, 1)}
+								{!row.remnawave.passed && <span title={text.failed}> †</span>}
 							</td>
 						</tr>
 					),

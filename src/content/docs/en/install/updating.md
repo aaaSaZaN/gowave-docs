@@ -57,21 +57,21 @@ For updates without prompts, for example from cron or Ansible, use the [`--updat
 
 ## Docker
 
-There is no button in Docker. The panel shows the command to run on the server instead:
+There is no button in Docker: the panel shows the command to run on the server. The project path in the hint comes from `GOWAVE_COMPOSE_DIR`:
 
 ```bash
 cd /opt/gowave-docker && docker compose pull && docker compose up -d
 ```
 
-In Docker the channel is the image in `GOWAVE_IMAGE` in `.env`. When you switch channels in **Build Info**, the panel shows a command that replaces it:
+In Docker the channel is the panel image tag in `docker-compose.yml`. To switch, change the tag and run the command above; switching back means `:latest` again:
 
 ```bash
 cd /opt/gowave-docker
-sed -i '/^GOWAVE_IMAGE=/d' .env && echo 'GOWAVE_IMAGE=ghcr.io/aaasazan/gowave:dev' >> .env
+sed -i 's#ghcr.io/aaasazan/gowave:latest#ghcr.io/aaasazan/gowave:dev#' docker-compose.yml
 docker compose pull && docker compose up -d
 ```
 
-Use `:latest` instead of `:dev` to go back to stable. The project path in the hint comes from `GOWAVE_COMPOSE_DIR`.
+In older projects, where the compose file references `${GOWAVE_IMAGE}`, the channel is still picked by that variable in `.env`.
 
 A container cannot replace its own image. Something outside has to do it, and that requires the Docker socket, which means root on the host. Giving that to a web panel would turn a panel compromise into a server compromise, so Docker updates stay a regular command.
 

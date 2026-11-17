@@ -57,21 +57,21 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave/mai
 
 ## Docker
 
-В Docker кнопки нет - панель показывает команду, которую нужно выполнить на сервере:
+В Docker кнопки нет: панель показывает команду, которую нужно выполнить на сервере. Путь к проекту в подсказке берётся из `GOWAVE_COMPOSE_DIR`:
 
 ```bash
 cd /opt/gowave-docker && docker compose pull && docker compose up -d
 ```
 
-Канал в Docker задаёт образ в `GOWAVE_IMAGE` из `.env`. При смене канала в **Build Info** панель покажет команду, которая его заменит:
+Канал в Docker задаёт тег образа панели в `docker-compose.yml`. Чтобы переключить канал, поменяйте тег и выполните команду выше; обратный переход - снова `:latest`:
 
 ```bash
 cd /opt/gowave-docker
-sed -i '/^GOWAVE_IMAGE=/d' .env && echo 'GOWAVE_IMAGE=ghcr.io/aaasazan/gowave:dev' >> .env
+sed -i 's#ghcr.io/aaasazan/gowave:latest#ghcr.io/aaasazan/gowave:dev#' docker-compose.yml
 docker compose pull && docker compose up -d
 ```
 
-Чтобы вернуться на stable, укажите `:latest` вместо `:dev`. Путь к проекту в подсказке берётся из `GOWAVE_COMPOSE_DIR`.
+В старых проектах, где compose-файл ссылается на `${GOWAVE_IMAGE}`, канал по-прежнему выбирается этой переменной в `.env`.
 
 Контейнер не может заменить собственный образ. Обновлять его должен кто-то снаружи, а для этого нужен доступ к Docker-сокету, то есть права root на хосте. Давать такой доступ веб-панели небезопасно: взлом панели превратился бы во взлом сервера. Поэтому обновление в Docker остаётся обычной командой.
 

@@ -111,7 +111,7 @@ For the [compose installation](../../install/docker/) only:
 
 | Variable | Description |
 | :--- | :--- |
-| `GOWAVE_IMAGE` | Panel image, default `ghcr.io/aaasazan/gowave:latest`. For the dev channel use `ghcr.io/aaasazan/gowave:dev` |
+| `GOWAVE_IMAGE` | Outdated: the current `docker-compose.yml` does not read it. Only older projects whose compose file references `${GOWAVE_IMAGE}` still use it |
 | `GOWAVE_COMPOSE_DIR` | Directory with `docker-compose.yml`; shown in the update hint |
 | `POSTGRES_USER`, `POSTGRES_DB` | Default `gowave` |
 | `POSTGRES_PASSWORD` | Required |

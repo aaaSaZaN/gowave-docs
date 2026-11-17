@@ -7,7 +7,7 @@ sidebar:
 
 GoWave reads a 3x-ui database (SQLite) and imports its clients and inbounds. The installer does not offer this import; it is a separate command. The schema was checked against the 3x-ui v2.8.5 sources, and the import has seen few real databases so far, so try it on a test GoWave database first.
 
-Before importing, stop 3x-ui (`x-ui stop`) and back up the GoWave database. Run the command from the panel directory:
+Before importing, stop 3x-ui (`x-ui stop`) and back up the GoWave database:
 
 ```bash
 # /etc/x-ui/x-ui.db by default

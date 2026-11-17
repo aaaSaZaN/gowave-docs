@@ -71,8 +71,9 @@ systemctl enable --now gowave
 `service install`:
 
 - creates the `gowave` system group and user, with no shell and no home directory, unless they exist;
-- gives `/opt/gowave` to that user, with mode `0750` on the directory and `0600` on `.env`;
-- writes `/etc/systemd/system/gowave.service.d/90-unprivileged.conf` and runs `systemctl daemon-reload`.
+- leaves the directory owned by root and gives group `gowave` mode `1770` with the sticky bit;
+- moves `.env` to `root:gowave` with mode `0640` and hands the `*.db*` database files to the `gowave` user;
+- writes `/etc/systemd/system/gowave.service.d/90-unprivileged.conf`, the update units `gowave-update.service` and `gowave-update.path`, and runs `systemctl daemon-reload`.
 
 It never touches `gowave.service` itself, so your `Environment=` lines and other settings there stay. The directory has to be a dedicated one: the command refuses `/opt`, `/usr/local`, anything under `/home` and other shared paths. Only Latin letters, digits and `_ . / -` are allowed in the path.
 
@@ -136,10 +137,10 @@ Give the directory to the service user as well: `chown gowave:gowave /srv/gowave
 
 ## CLI commands
 
-Run them as `gowave` from the panel directory. If you run them as root, SQLite may create database side files (`gowave.db-wal`, `gowave.db-shm`) that the service then cannot open:
+Commands work from any directory, and running them as root is safe: the binary finds the installation itself, loads its `.env`, and when it finishes hands the database files (`gowave.db`, `gowave.db-wal`, `gowave.db-shm`) back to the `gowave` user. The old `cd /opt/gowave && sudo -u gowave gowave rescue` is no longer needed:
 
 ```bash
-cd /opt/gowave && sudo -u gowave gowave rescue
+gowave rescue
 ```
 
 All commands are in the [CLI reference](../../reference/cli/).

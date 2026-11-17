@@ -118,7 +118,7 @@ While copying, the installer stops only the old panel's app container; its datab
 
 The same command on a server that already runs GoWave opens a menu:
 
-- "Update GoWave". It asks for the channel first; Enter keeps the current one. On systemd the installer downloads and verifies the new release, reapplies the service restrictions, restarts the panel and waits for it to answer. In Docker it sets the channel's image in `GOWAVE_IMAGE` and runs `docker compose pull` and `up`. A custom image (a local build or a mirror) is left alone. In older `docker-compose.yml` files it also binds the panel port to `127.0.0.1`. If no domain with HTTPS is set up yet, it offers to set one up.
+- "Update GoWave". It asks for the channel first; Enter keeps the current one. On systemd the installer downloads and verifies the new release, reapplies the service restrictions, restarts the panel and waits for it to answer. In Docker it writes the channel's image into `docker-compose.yml` and runs `docker compose pull` and `up`. A custom image (a local build or a mirror) is left alone, and in older projects with `GOWAVE_IMAGE` in `.env` the installer updates that variable instead. In older `docker-compose.yml` files it also binds the panel port to `127.0.0.1`. If no domain with HTTPS is set up yet, it offers to set one up.
 - "Set up domain and HTTPS". Change the domain or switch between Caddy, Nginx and your own proxy. The installer removes the old proxy's config for the panel, updates `PANEL_DOMAIN` and `SUB_PUBLIC_DOMAIN` in `.env` and restarts the panel.
 - "Change dashboard path", see [above](#dashboard-path).
 - "Install or update the local node", see [above](#local-node).

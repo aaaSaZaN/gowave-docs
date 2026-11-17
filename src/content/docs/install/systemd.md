@@ -71,8 +71,9 @@ systemctl enable --now gowave
 Команда `service install`:
 
 - создаёт системную группу и пользователя `gowave` без shell и домашнего каталога, если их ещё нет;
-- отдаёт `/opt/gowave` этому пользователю, ставит каталогу права `0750`, а `.env` - `0600`;
-- пишет `/etc/systemd/system/gowave.service.d/90-unprivileged.conf` и выполняет `systemctl daemon-reload`.
+- оставляет каталог root, а группе `gowave` даёт права `1770` со sticky-битом;
+- переводит `.env` во владение `root:gowave` с правами `0640` и отдаёт пользователю `gowave` файлы баз `*.db*`;
+- пишет `/etc/systemd/system/gowave.service.d/90-unprivileged.conf`, службы обновления `gowave-update.service` и `gowave-update.path` и выполняет `systemctl daemon-reload`.
 
 Сам `gowave.service` команда не трогает, поэтому ваши `Environment=` и другие настройки в нём сохраняются. Каталог должен быть отдельным: в путях `/opt`, `/usr/local`, `/home/...` и других общих каталогах команда откажется работать. В пути допустимы только латиница, цифры и `_ . / -`.
 
@@ -136,10 +137,10 @@ ReadWritePaths=/srv/gowave-backups
 
 ## Команды CLI
 
-Запускайте их от `gowave` из каталога панели. Если запустить от root, SQLite может создать служебные файлы базы (`gowave.db-wal`, `gowave.db-shm`), которые служба потом не откроет:
+Команды работают из любого каталога, запуск от root безопасен: бинарник сам находит установку, подтягивает её `.env`, а по завершении возвращает файлы базы (`gowave.db`, `gowave.db-wal`, `gowave.db-shm`) во владение пользователю `gowave`. Прежний запуск через `cd /opt/gowave && sudo -u gowave gowave rescue` больше не нужен:
 
 ```bash
-cd /opt/gowave && sudo -u gowave gowave rescue
+gowave rescue
 ```
 
 Все команды - в [справочнике CLI](../../reference/cli/).

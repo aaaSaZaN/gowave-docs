@@ -37,15 +37,20 @@
 	font-size: 1.55rem !important;
 }
 
-/* Hero title: GoWave vector icon next to the title text (only hero pages, not regular docs h1) */
+/* Hero title: GoWave vector icon next to the title text (only hero pages, not regular docs h1).
+   No tile: the ring reads as a circle on its own; wave color follows the theme. */
 h1[data-page-title]::before {
 	content: '';
 	display: inline-block;
-	width: 1em;
-	height: 1em;
-	margin-inline-end: 0.28em;
-	vertical-align: -0.14em;
-	background: url('../assets/icon.svg') center / contain no-repeat;
+	width: 0.76em;
+	height: 0.76em;
+	margin-inline-end: 0.4em;
+	vertical-align: -0.02em;
+	background: url('../assets/icon-dark.svg') center / contain no-repeat;
+}
+
+:root[data-theme='light'] h1[data-page-title]::before {
+	background-image: url('../assets/icon-light.svg');
 }
 
 /* Hero action buttons */

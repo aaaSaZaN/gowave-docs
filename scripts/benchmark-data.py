@@ -82,7 +82,7 @@ def main(artifact):
     def row(results, workload, mode, level, target, fields=None):
         values = results[(workload, mode, level, target)]
         if fields:
-            return {k: round(values[k], 2) for k in fields}
+            return {k: round(values[k], 2) for k in fields} | {"passed": values["passed"]}
         return {k: round(v, 2) for k, v in values.items() if k != "passed"} | {"passed": values["passed"]}
 
     tables = {

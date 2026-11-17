@@ -7,7 +7,7 @@ sidebar:
 
 The [installer](../../install/installer/#moving-from-another-panel) detects PasarGuard and offers to move its data. The commands below are for running it manually. Source databases are only ever read.
 
-Before importing, stop writes to PasarGuard and back up the GoWave database. If in doubt, import into a separate test database first. Run the command from the panel directory so it picks up GoWave's `.env`.
+Before importing, stop writes to PasarGuard and back up the GoWave database. If in doubt, import into a separate test database first. The command finds the GoWave install and its `.env` on its own.
 
 ```bash
 # Find the database automatically

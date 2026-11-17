@@ -111,7 +111,7 @@ sidebar:
 
 | Переменная | Описание |
 | :--- | :--- |
-| `GOWAVE_IMAGE` | Образ панели, по умолчанию `ghcr.io/aaasazan/gowave:latest`. Для канала dev - `ghcr.io/aaasazan/gowave:dev` |
+| `GOWAVE_IMAGE` | Устарела: текущий `docker-compose.yml` образ из неё не берёт. Нужна только старым проектам, где compose-файл ссылается на `${GOWAVE_IMAGE}` |
 | `GOWAVE_COMPOSE_DIR` | Папка с `docker-compose.yml`; используется в подсказке обновления |
 | `POSTGRES_USER`, `POSTGRES_DB` | По умолчанию `gowave` |
 | `POSTGRES_PASSWORD` | Обязателен |
