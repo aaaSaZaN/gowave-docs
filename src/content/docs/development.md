@@ -1,6 +1,6 @@
 ---
 title: Сборка из исходников
-description: Как собрать GoWave и Docker-образ самостоятельно.
+description: Как собрать Gowave и Docker-образ самостоятельно.
 sidebar:
   order: 1
 ---

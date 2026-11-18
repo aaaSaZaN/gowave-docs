@@ -1,6 +1,6 @@
 ---
 title: Benchmarks
-description: GoWave versus Remnawave 3.4.5. Methodology, full results and limitations.
+description: Gowave versus Remnawave 3.4.5. Methodology, full results and limitations.
 ---
 
 import BenchBars from '../../../components/BenchBars.astro';
@@ -10,7 +10,7 @@ import BenchTable from '../../../components/BenchTable.astro';
 
 ## Setup
 
-- **Remnawave 3.4.5** (`remnawave/backend:3.4.5`) versus **GoWave** at commit [`350eda3`](https://github.com/aaaSaZaN/gowave/commit/350eda34d62b13726b0d5e0793a5395a97b1d0a6).
+- **Remnawave 3.4.5** (`remnawave/backend:3.4.5`) versus **Gowave** at commit [`350eda3`](https://github.com/aaaSaZaN/gowave/commit/350eda34d62b13726b0d5e0793a5395a97b1d0a6).
 - Run on [GitHub Actions](https://github.com/aaaSaZaN/gowave-bench/actions/runs/43946771878) on a runner with 4 vCPU (Intel Xeon 6975P-C) and 15 GB RAM. Logs, raw results and the [workflow](https://github.com/aaaSaZaN/gowave-bench/blob/main/.github/workflows/benchmark.yml) are public, so the run can be repeated.
 - Docker, each panel limited to **2 CPU and 2 GiB**, each with its own **PostgreSQL 17 on 1 CPU** and identical settings. Remnawave also gets Valkey (0.5 CPU), which it requires.
 - The same data, created through each panel's API: 1,000 users, 20 hosts, a profile and a squad.
@@ -29,19 +29,19 @@ import BenchTable from '../../../components/BenchTable.astro';
 
 ## Latency at a fixed load
 
-*Rate* mode: exactly 100 or 500 requests per second, so the comparison is about response times. At 100 both panels hold the schedule. At 500 Remnawave only keeps up on reads (p99 23-32 ms); subscriptions fail the SLO: in one run out of three k6 dropped 16 iterations out of 10,000 because all virtual users were stuck waiting for responses. GoWave passes every run with p99 up to 6 ms.
+*Rate* mode: exactly 100 or 500 requests per second, so the comparison is about response times. At 100 both panels hold the schedule. At 500 Remnawave only keeps up on reads (p99 23-32 ms); subscriptions fail the SLO: in one run out of three k6 dropped 16 iterations out of 10,000 because all virtual users were stuck waiting for responses. Gowave passes every run with p99 up to 6 ms.
 
 <BenchTable lang="en" kind="rate" />
 
 ## Memory and startup
 
-- **Memory** (median across all runs, whole panel container including workers): GoWave about 43 MiB, Remnawave about 979 MiB.
-- **Startup** until the first authenticated API response (median of 10 trials): GoWave 154 ms, Remnawave 5.0 s.
+- **Memory** (median across all runs, whole panel container including workers): Gowave about 43 MiB, Remnawave about 979 MiB.
+- **Startup** until the first authenticated API response (median of 10 trials): Gowave 154 ms, Remnawave 5.0 s.
 
 ## Worth knowing
 
 - **Dashboard stats at 32 clients and more (up to 7.7×)** comes from coalescing concurrent requests: while one computation runs in the database, the others wait for its result. Such a stampede on one endpoint is rare; the everyday difference shows with a single client: **3.1×**.
-- **Writes from 32 clients up are limited by GoWave's PostgreSQL**, not by the application: the database, capped at 1 CPU, is throttled in 3-8% of periods, the panel container is not.
+- **Writes from 32 clients up are limited by Gowave's PostgreSQL**, not by the application: the database, capped at 1 CPU, is throttled in 3-8% of periods, the panel container is not.
 - **Nodes are not part of the test.** Node management, traffic collection, HWID and real VPN clients were not measured, only the panel API.
 - **This is a shared GitHub Actions virtual machine**, not a capacity study: the active panel, its database and k6 share 4 cores, and runs are short. The numbers show the ratio, not absolute limits.
 
@@ -51,6 +51,6 @@ import BenchTable from '../../../components/BenchTable.astro';
 
 ## Where the numbers come from
 
-The tests live in the public [gowave-bench](https://github.com/aaaSaZaN/gowave-bench) repository: k6 scenarios, both panels in Docker, data preparation and charts. Runs happen on [GitHub Actions](https://github.com/aaaSaZaN/gowave-bench/actions/workflows/benchmark.yml): the workflow builds GoWave from source, pulls the Remnawave image and compares them on the same virtual machine.
+The tests live in the public [gowave-bench](https://github.com/aaaSaZaN/gowave-bench) repository: k6 scenarios, both panels in Docker, data preparation and charts. Runs happen on [GitHub Actions](https://github.com/aaaSaZaN/gowave-bench/actions/workflows/benchmark.yml): the workflow builds Gowave from source, pulls the Remnawave image and compares them on the same virtual machine.
 
 Every run's logs, machine details and raw results (in the artifacts) are public. The numbers on this page come from [run 43946771878](https://github.com/aaaSaZaN/gowave-bench/actions/runs/43946771878). To check them, fork the repository and run the **Benchmark** workflow with the `full` profile.

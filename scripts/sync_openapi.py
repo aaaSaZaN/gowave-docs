@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Copy the API contract from a GoWave checkout into public/api/openapi.json.
+"""Copy the API contract from a Gowave checkout into public/api/openapi.json.
 
-GoWave endpoints outside the contract come from scripts/openapi-gowave.json.
-GoWave changes to contract endpoints are patched in below.
+Gowave endpoints outside the contract come from scripts/openapi-gowave.json.
+Gowave changes to contract endpoints are patched in below.
 
 Usage: python3 scripts/sync_openapi.py [path/to/gowave]
 """
@@ -19,11 +19,11 @@ target = os.path.join(here, "..", "public/api/openapi.json")
 spec = json.load(open(source, encoding="utf-8"))
 overlay = json.load(open(overlay_path, encoding="utf-8"))
 contract = spec.get("info", {}).get("version", "")
-spec["info"]["title"] = "GoWave API"
+spec["info"]["title"] = "Gowave API"
 spec["info"]["description"] = (
-    f"GoWave implements the Remnawave backend API, contract `@remnawave/backend-contract` {contract}. "
+    f"Gowave implements the Remnawave backend API, contract `@remnawave/backend-contract` {contract}. "
     "Requests go to your panel: `https://<panel domain>/api/...` with `Authorization: Bearer <token>`.\n\n"
-    "Endpoints GoWave adds on top of the contract are under **GoWave extensions**."
+    "Endpoints Gowave adds on top of the contract are under **Gowave extensions**."
 )
 
 # Extensions must not shadow the contract: if upstream adds the same route,
@@ -45,21 +45,21 @@ def response_body(op):
     return op["responses"]["default"]["content"]["application/json"]["schema"]["properties"]["response"]
 
 
-# UpdateNodeCommand: GoWave accepts how the traffic counter starts.
+# UpdateNodeCommand: Gowave accepts how the traffic counter starts.
 json_body(spec["paths"]["/api/nodes"]["patch"])["properties"]["trafficTrackingStart"] = {
     "type": "string",
     "enum": ["keep", "zero", "period"],
     "description": (
-        "GoWave extension. Applies when this update turns `isTrafficTrackingActive` on: "
+        "Gowave extension. Applies when this update turns `isTrafficTrackingActive` on: "
         "`keep` keeps the bytes counted since the last reset (the default, as upstream), "
         "`zero` starts from nothing, `period` counts the current period from the usage history."
     ),
 }
 
 # Yandex sign-in is removed; the fields stay for contract compatibility.
-YANDEX = "Not supported by GoWave: Yandex sign-in is removed. The provider is always disabled and saved settings are discarded."
+YANDEX = "Not supported by Gowave: Yandex sign-in is removed. The provider is always disabled and saved settings are discarded."
 for path in ("/api/auth/oauth2/authorize", "/api/auth/oauth2/callback"):
-    json_body(spec["paths"][path]["post"])["properties"]["provider"]["description"] = "`yandex` is not supported by GoWave."
+    json_body(spec["paths"][path]["post"])["properties"]["provider"]["description"] = "`yandex` is not supported by Gowave."
 settings = spec["paths"]["/api/remnawave-settings"]
 for schema in (
     json_body(settings["patch"])["properties"]["oauth2Settings"],
@@ -68,13 +68,13 @@ for schema in (
 ):
     schema["properties"]["yandex"]["description"] = YANDEX
 
-# Response rule headers: GoWave stores and returns an object; the upstream
+# Response rule headers: Gowave stores and returns an object; the upstream
 # key/value array is still accepted in requests and converted.
 HEADERS_OBJECT = {
     "type": "object",
     "additionalProperties": {"type": "string", "minLength": 1},
     "description": (
-        "GoWave extension: header names mapped to values, for example `{\"providerid\": \"12345\"}`. "
+        "Gowave extension: header names mapped to values, for example `{\"providerid\": \"12345\"}`. "
         "Names are case-insensitive; a repeated name keeps the last value."
     ),
 }
@@ -103,5 +103,5 @@ for path in ("/api/subscription-settings", "/api/system/testers/srr-matcher"):
 json.dump(spec, open(target, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 print(
     f"wrote {os.path.normpath(target)} (contract {contract}, {len(spec.get('paths', {}))} paths, "
-    f"{sum(len(ops) for ops in overlay['paths'].values())} GoWave extensions)"
+    f"{sum(len(ops) for ops in overlay['paths'].values())} Gowave extensions)"
 )

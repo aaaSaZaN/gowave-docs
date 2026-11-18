@@ -1,6 +1,6 @@
 ---
 title: Обновление
-description: Как обновлять GoWave на systemd и в Docker, каналы stable и dev.
+description: Как обновлять Gowave на systemd и в Docker, каналы stable и dev.
 sidebar:
   order: 7
 ---

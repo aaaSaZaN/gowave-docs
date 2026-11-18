@@ -1,6 +1,6 @@
 ---
 title: PostgreSQL 17 → 18
-description: Upgrading the database of a Docker GoWave install from PostgreSQL 17 to 18.
+description: Upgrading the database of a Docker Gowave install from PostgreSQL 17 to 18.
 sidebar:
   order: 5
 ---

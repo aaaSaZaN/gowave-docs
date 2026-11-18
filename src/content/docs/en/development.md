@@ -1,6 +1,6 @@
 ---
 title: Building from source
-description: Building GoWave and its Docker image yourself.
+description: Building Gowave and its Docker image yourself.
 sidebar:
   order: 1
 ---

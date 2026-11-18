@@ -11,11 +11,11 @@ export default defineConfig({
 	image: { service: passthroughImageService() },
 	integrations: [
 		starlight({
-			title: 'GoWave',
+			title: 'Gowave',
 			logo: {
 				light: './src/assets/logo-light.svg',
 				dark: './src/assets/logo-dark.svg',
-				alt: 'GoWave',
+				alt: 'Gowave',
 				replacesTitle: true,
 			},
 			defaultLocale: 'root',

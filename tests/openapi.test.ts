@@ -8,7 +8,7 @@ import {
 } from '../src/lib/openapi';
 
 describe('API reference', () => {
-	test('renders every contract operation exactly once, including GoWave extensions', () => {
+	test('renders every contract operation exactly once, including Gowave extensions', () => {
 		const groups = groupOperations(document);
 		const operations = groups.flatMap((group) => group.operations);
 		expect(operations).toHaveLength(229);

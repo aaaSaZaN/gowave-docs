@@ -7,7 +7,7 @@ import '../../styles/api.css';
 
 const groups = groupOperations(document).map((group) => ({
 	...group,
-	title: group.name === 'gowave' ? 'GoWave extensions' : group.name,
+	title: group.name === 'gowave' ? 'Gowave extensions' : group.name,
 }));
 const count = groups.reduce((total, group) => total + group.operations.length, 0);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -20,15 +20,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta
 			name="description"
-			content="GoWave API endpoints, authentication, request bodies and response schemas."
+			content="Gowave API endpoints, authentication, request bodies and response schemas."
 		>
-		<title>GoWave API</title>
+		<title>Gowave API</title>
 		<link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml">
 	</head>
 	<body>
 		<a class="skip-link" href="#reference">Skip to API reference</a>
 		<header>
-			<a class="brand" href={`${base}/`}>GoWave <span>API</span></a>
+			<a class="brand" href={`${base}/`}>Gowave <span>API</span></a>
 			<nav aria-label="Documentation">
 				<a href={`${base}/`}>Документация</a>
 				<a href={`${base}/en/`}>English docs</a>

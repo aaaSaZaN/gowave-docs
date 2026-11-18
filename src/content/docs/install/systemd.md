@@ -1,6 +1,6 @@
 ---
 title: Systemd и SQLite
-description: Ручная установка GoWave одним бинарником с базой SQLite.
+description: Ручная установка Gowave одним бинарником с базой SQLite.
 sidebar:
   order: 3
 ---
@@ -42,7 +42,7 @@ chmod 600 .env
 
 ```ini
 [Unit]
-Description=GoWave Panel
+Description=Gowave Panel
 After=network-online.target
 Wants=network-online.target
 

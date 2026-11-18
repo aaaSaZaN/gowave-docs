@@ -40,7 +40,7 @@ memory = {target: statistics.median(v["memory"] for k, v in concurrency.items() 
 
 def bars(workload):
     return [{"label": label, "value": round(concurrency[(workload, "concurrency", LEVEL, target)]["rps"])}
-            for label, target in (("GoWave", "gowave"), ("Remnawave", "remnawave"))]
+            for label, target in (("Gowave", "gowave"), ("Remnawave", "remnawave"))]
 
 
 landing = {
@@ -58,11 +58,11 @@ landing = {
         {"title": {"ru": "Память под нагрузкой", "en": "Memory under load"},
          "subtitle": {"ru": "контейнер панели, медиана", "en": "panel container, median"},
          "unit": {"ru": "МиБ", "en": "MiB"}, "higherIsBetter": False,
-         "rows": [{"label": "GoWave", "value": round(memory["gowave"])}, {"label": "Remnawave", "value": round(memory["remnawave"])}]},
+         "rows": [{"label": "Gowave", "value": round(memory["gowave"])}, {"label": "Remnawave", "value": round(memory["remnawave"])}]},
         {"title": {"ru": "Запуск", "en": "Startup"},
          "subtitle": {"ru": "до первого ответа API", "en": "until the API answers"},
          "unit": {"ru": "мс", "en": "ms"}, "higherIsBetter": False,
-         "rows": [{"label": "GoWave", "value": round(startup_ms["gowave"])}, {"label": "Remnawave", "value": round(startup_ms["remnawave"])}]},
+         "rows": [{"label": "Gowave", "value": round(startup_ms["gowave"])}, {"label": "Remnawave", "value": round(startup_ms["remnawave"])}]},
     ],
 }
 

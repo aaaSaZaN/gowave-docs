@@ -1,4 +1,4 @@
-/* GoWave teal, the same as the benchmark charts. */
+/* Gowave teal, the same as the benchmark charts. */
 :root {
 	--sl-color-accent-low: #0b2f36;
 	--sl-color-accent: #0e8fa3;
@@ -37,7 +37,7 @@
 	font-size: 1.55rem !important;
 }
 
-/* Hero title: GoWave vector icon next to the title text (only hero pages, not regular docs h1).
+/* Hero title: Gowave vector icon next to the title text (only hero pages, not regular docs h1).
    No tile: the ring reads as a circle on its own; wave color follows the theme. */
 h1[data-page-title]::before {
 	content: '';

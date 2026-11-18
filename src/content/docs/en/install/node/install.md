@@ -1,11 +1,11 @@
 ---
 title: Installation
-description: Installing GoWave Node (gowave-node) with one command.
+description: Installing Gowave Node (gowave-node) with one command.
 sidebar:
   order: 1
 ---
 
-GoWave Node ([gowave-node](https://github.com/aaaSaZaN/gowave-node)) manages the Xray core on the server carrying user traffic. It is a fast and lightweight Go implementation of the node: compatible with the Remnawave Node 3.4.2 protocol, it connects to both GoWave and the original Remnawave panel. Xray runs as a separate process; Node.js and Docker are not needed.
+Gowave Node ([gowave-node](https://github.com/aaaSaZaN/gowave-node)) manages the Xray core on the server carrying user traffic. It is a fast and lightweight Go implementation of the node: compatible with the Remnawave Node 3.4.2 protocol, it connects to both Gowave and the original Remnawave panel. Xray runs as a separate process; Node.js and Docker are not needed.
 
 The project was previously named remnanode-go, and the command was `remnanode`. The installer migrates existing installations automatically.
 
@@ -21,7 +21,7 @@ The project was previously named remnanode-go, and the command was `remnanode`. 
 
 When adding a node, the panel displays a ready-to-run command with the `SECRET_KEY` and node port prefilled. Copy and run it on the node server.
 
-If the panel is hosted on the same server, the [GoWave installer](../../installer/#local-node) can deploy the node automatically.
+If the panel is hosted on the same server, the [Gowave installer](../../installer/#local-node) can deploy the node automatically.
 
 ## Quick script installation
 
@@ -57,7 +57,7 @@ Legacy environment variables with the `REMNANODE_` prefix are accepted for backw
 
 ## Installing custom Xray binaries
 
-By default, `gowave-node` installs and maintains the standard Xray core (`rw-core`). You can also install custom builds, forks, or explicit releases via CLI or through the GoWave web panel.
+By default, `gowave-node` installs and maintains the standard Xray core (`rw-core`). You can also install custom builds, forks, or explicit releases via CLI or through the Gowave web panel.
 
 ### Via node CLI
 
@@ -81,9 +81,9 @@ Repository requirements:
 - GitHub Releases in the target repository must include compiled `.zip` archives or binaries matching your server architecture (e.g. `Xray-linux-64.zip` or arm64 archives).
 - The node extracts the binary, verifies execution against the current configuration, and activates the core only after passing validation.
 
-### Via GoWave web panel
+### Via Gowave web panel
 
-In the GoWave web interface:
+In the Gowave web interface:
 1. Open the node card and click the current **Xray Core** version.
 2. Select a release or paste a direct HTTPS download URL to an archive or binary.
 
@@ -126,11 +126,11 @@ The node implements the Remnawave Node API protocol version 3.4.2:
 - Status and version checks return protocol version `3.4.2` to pass Remnawave's compatibility check.
 - Users synchronize sequentially: the panel issues separate requests for each user (`add-user` and `remove-user`).
 
-### GoWave advantages
+### Gowave advantages
 
-When paired with GoWave, connection efficiency is increased:
+When paired with Gowave, connection efficiency is increased:
 - The panel sends the `X-Better-One: true` header. The node reports its true release version and the `go` runtime type. The panel shows exact version details and allows one-click updates.
-- Bulk synchronization: GoWave syncs users in batches of up to 1,000 users per request via `add-users` and `remove-users`, preventing queue saturation on node restarts.
+- Bulk synchronization: Gowave syncs users in batches of up to 1,000 users per request via `add-users` and `remove-users`, preventing queue saturation on node restarts.
 - Decoupled polling: health checks run every 15 seconds (up to 32 concurrent checks), while stats polling runs every 5 seconds, evenly distributed over the interval. This protects the database and network from traffic spikes. If recording usage temporarily fails, the node retries on the next poll without lost bytes.
 
 ## Installed components

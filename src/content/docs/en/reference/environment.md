@@ -1,6 +1,6 @@
 ---
 title: Environment variables
-description: Every GoWave setting from .env.
+description: Every Gowave setting from .env.
 sidebar:
   order: 2
 ---
@@ -57,7 +57,7 @@ The metrics port also serves `/health`, which checks the database connection and
 | `SERVICE_DISABLE_USER_USAGE_RECORDS` | `false` | Do not record per-user traffic statistics |
 | `SERVICE_DISABLE_SRH_RECORDS` | `false` | Do not record subscription request history |
 | `USER_USAGE_IGNORE_BELOW_BYTES` | `0` | Skip a user's traffic for a polling round if it is below this many bytes |
-| `EXPORT_TO_STREAM_ENABLED` | `false` | A compatibility flag only: the API reports its value, but GoWave has no Redis Streams export |
+| `EXPORT_TO_STREAM_ENABLED` | `false` | A compatibility flag only: the API reports its value, but Gowave has no Redis Streams export |
 
 ## Notifications
 
@@ -87,7 +87,7 @@ How webhooks work and how to turn single events on or off: see [Notifications](.
 
 A chat set to `change_me` counts as not configured. The "View user" button in Torrent Blocker reports points to `PANEL_DOMAIN` with `PANEL_BASE_PATH` and is omitted for local domains. A failed login sends only the length of the typed password to Telegram, never the password itself.
 
-Notification settings of the old panel are copied during migration. On an existing GoWave install, use the installer menu item "Copy Telegram and webhook notifications from the old panel".
+Notification settings of the old panel are copied during migration. On an existing Gowave install, use the installer menu item "Copy Telegram and webhook notifications from the old panel".
 
 ### Threshold notifications
 
@@ -120,9 +120,9 @@ For the [compose installation](../../install/docker/) only:
 
 The installer also writes `GOWAVE_PROXY` (`caddy`, `nginx` or `external`) to `.env` to remember which proxy it set up. The panel itself does not read it.
 
-## What GoWave ignores
+## What Gowave ignores
 
-GoWave silently skips these variables from a Remnawave `.env`, because it needs neither Redis nor several processes:
+Gowave silently skips these variables from a Remnawave `.env`, because it needs neither Redis nor several processes:
 
 - `REDIS_SOCKET`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD`;
 - `API_INSTANCES`;

@@ -7,7 +7,7 @@ sidebar:
 
 **Subscription Page** - страница для пользователей (`https://sub.yourdomain.com/<shortUuid>`): инструкции по подключению и QR-коды для приложений (Happ, sing-box, v2rayNG, Clash, Shadowrocket). Она также скрывает домен и IP панели от клиентов.
 
-GoWave совместим с официальным образом `remnawave/subscription-page`.
+Gowave совместим с официальным образом `remnawave/subscription-page`.
 
 ## Подготовка
 

@@ -7,7 +7,7 @@ sidebar:
 
 The **Subscription Page** is the page your users open (`https://sub.yourdomain.com/<shortUuid>`): connection instructions and QR codes for apps (Happ, sing-box, v2rayNG, Clash, Shadowrocket). It also hides the panel's domain and IP from clients.
 
-GoWave works with the official `remnawave/subscription-page` image.
+Gowave works with the official `remnawave/subscription-page` image.
 
 ## Preparation
 

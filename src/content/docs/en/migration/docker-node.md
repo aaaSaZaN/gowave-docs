@@ -1,11 +1,11 @@
 ---
 title: Docker node to Go node
-description: Moving a node from the remnawave/node image to GoWave Node.
+description: Moving a node from the remnawave/node image to Gowave Node.
 sidebar:
   order: 5
 ---
 
-If a node runs in Docker on the `remnawave/node` image, the same installer moves it to [GoWave Node](../../install/node/install/) (as root on the node server):
+If a node runs in Docker on the `remnawave/node` image, the same installer moves it to [Gowave Node](../../install/node/install/) (as root on the node server):
 
 ```bash
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"

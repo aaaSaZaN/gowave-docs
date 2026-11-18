@@ -1,6 +1,6 @@
 ---
 title: Updating
-description: Updating GoWave on systemd and in Docker, stable and dev channels.
+description: Updating Gowave on systemd and in Docker, stable and dev channels.
 sidebar:
   order: 7
 ---

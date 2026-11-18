@@ -20,7 +20,7 @@
       "higherIsBetter": true,
       "rows": [
         {
-          "label": "GoWave",
+          "label": "Gowave",
           "value": 1920
         },
         {
@@ -45,7 +45,7 @@
       "higherIsBetter": true,
       "rows": [
         {
-          "label": "GoWave",
+          "label": "Gowave",
           "value": 1608
         },
         {
@@ -70,7 +70,7 @@
       "higherIsBetter": false,
       "rows": [
         {
-          "label": "GoWave",
+          "label": "Gowave",
           "value": 43
         },
         {
@@ -95,7 +95,7 @@
       "higherIsBetter": false,
       "rows": [
         {
-          "label": "GoWave",
+          "label": "Gowave",
           "value": 154
         },
         {

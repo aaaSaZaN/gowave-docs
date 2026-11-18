@@ -25,7 +25,7 @@ Open the address printed by the installer (`https://<domain>` or with your dashb
 
 ## Step 3. Xray config (config profile)
 
-GoWave manages Xray cores through configuration profiles. A profile stores the core's JSON configuration with inbounds and routing rules.
+Gowave manages Xray cores through configuration profiles. A profile stores the core's JSON configuration with inbounds and routing rules.
 
 1. Go to "Config profiles" and click "Create profile".
 2. In the editor, click the menu button at the bottom (three lines next to "Save") and choose "Load from GitHub". The panel fetches a ready configuration template.
@@ -47,7 +47,7 @@ sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/
 
 Once the service starts, the node connects to the panel, applies the profile, and starts Xray. The node status will change to "Online".
 
-If the node runs on the same machine as the panel, the [GoWave installer](../../install/installer/#local-node) can set it up locally on port `2222`.
+If the node runs on the same machine as the panel, the [Gowave installer](../../install/installer/#local-node) can set it up locally on port `2222`.
 
 ## Step 5. Host
 

@@ -1,6 +1,6 @@
 ---
 title: Требования
-description: Что нужно серверу для GoWave.
+description: Что нужно серверу для Gowave.
 sidebar:
   order: 1
 ---

@@ -1,6 +1,6 @@
 ---
 title: Systemd and SQLite
-description: Manual GoWave installation as a single binary with SQLite.
+description: Manual Gowave installation as a single binary with SQLite.
 sidebar:
   order: 3
 ---
@@ -42,7 +42,7 @@ The panel does not run as root: the service runs as the `gowave` system user. Cr
 
 ```ini
 [Unit]
-Description=GoWave Panel
+Description=Gowave Panel
 After=network-online.target
 Wants=network-online.target
 

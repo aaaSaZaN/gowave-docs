@@ -1,6 +1,6 @@
 ---
 title: Журнал
-description: Где смотреть логи GoWave, что в них пишется и как настроить подробность.
+description: Где смотреть логи Gowave, что в них пишется и как настроить подробность.
 sidebar:
   order: 3
 ---
@@ -21,7 +21,7 @@ sidebar:
 Одна строка на событие: время в UTC, уровень, компонент в квадратных скобках и сообщение. При запуске панель пишет сводку, по которой видно, как она настроена:
 
 ```text
-2026-11-05 10:00:00.120 INFO  [startup] GoWave v1.2.3 starting (stable channel, go1.27.1, linux/amd64, pid 1234)
+2026-11-05 10:00:00.120 INFO  [startup] Gowave v1.2.3 starting (stable channel, go1.27.1, linux/amd64, pid 1234)
 2026-11-05 10:00:00.180 INFO  [database] Connected to SQLite /opt/gowave/gowave.db; schema has 8 migrations, 0 applied now (12ms)
 2026-11-05 10:00:00.181 INFO  [startup] Running as gowave (native service), timezone UTC
 2026-11-05 10:00:00.181 INFO  [http] Dashboard served from /opt/gowave/frontend/dist at base path /
@@ -31,7 +31,7 @@ sidebar:
 2026-11-05 10:00:00.181 INFO  [webhook] Webhooks off (WEBHOOK_ENABLED)
 2026-11-05 10:00:00.185 INFO  [startup] 120 users (97 active), 3 nodes (3 enabled)
 2026-11-05 10:00:00.185 INFO  [jobs] 0 background jobs queued
-2026-11-05 10:00:00.190 INFO  [http] GoWave v1.2.3 is ready on http://127.0.0.1:3000
+2026-11-05 10:00:00.190 INFO  [http] Gowave v1.2.3 is ready on http://127.0.0.1:3000
 ```
 
 Пароль базы в журнал не попадает: в сводке видны только адрес и имя базы.
@@ -54,7 +54,7 @@ sidebar:
 
 | Сообщение | Что значит |
 | :--- | :--- |
-| `[security] GoWave is running as root` | Служба запущена от root. Обновите панель через установщик, он переведёт её на пользователя `gowave` |
+| `[security] Gowave is running as root` | Служба запущена от root. Обновите панель через установщик, он переведёт её на пользователя `gowave` |
 | `[security] ... is writable by the service account` | Бинарник может изменить сама панель. Установщик вернёт его во владение root |
 | `[security] APP_HOST=... exposes the panel without HTTPS` | Панель слушает не на loopback. Оставьте `APP_HOST=127.0.0.1` и отдавайте её через reverse proxy (к Docker это не относится: внутри контейнера `0.0.0.0` необходим, а доступ ограничивается публикацией на `127.0.0.1` в compose-файле) |
 | `[http] No frontend build found` | Рядом нет `frontend/dist`, работает только API |

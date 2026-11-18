@@ -2,8 +2,8 @@
   "tags": [
     {
       "name": "gowave",
-      "x-displayName": "GoWave extensions",
-      "description": "Endpoints GoWave adds on top of `@remnawave/backend-contract`. Remnawave clients and bots do not call them; the GoWave web interface does."
+      "x-displayName": "Gowave extensions",
+      "description": "Endpoints Gowave adds on top of `@remnawave/backend-contract`. Remnawave clients and bots do not call them; the Gowave web interface does."
     }
   ],
   "paths": {
@@ -164,9 +164,9 @@
                         "currentCoreVersion": { "type": "string", "description": "Xray core version." },
                         "architecture": { "type": "string" },
                         "os": { "type": "string" },
-                        "latestRelease": { "$ref": "#/components/schemas/GoWaveNodeRelease" },
-                        "latestPrerelease": { "$ref": "#/components/schemas/GoWaveNodeRelease" },
-                        "allReleases": { "type": "array", "items": { "$ref": "#/components/schemas/GoWaveNodeRelease" } },
+                        "latestRelease": { "$ref": "#/components/schemas/GowaveNodeRelease" },
+                        "latestPrerelease": { "$ref": "#/components/schemas/GowaveNodeRelease" },
+                        "allReleases": { "type": "array", "items": { "$ref": "#/components/schemas/GowaveNodeRelease" } },
                         "error": { "type": "string" }
                       }
                     }
@@ -632,7 +632,7 @@
     }
   },
   "schemas": {
-    "GoWaveNodeRelease": {
+    "GowaveNodeRelease": {
       "type": "object",
       "properties": {
         "tag_name": { "type": "string" },

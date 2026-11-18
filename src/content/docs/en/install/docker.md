@@ -1,6 +1,6 @@
 ---
 title: Docker Compose and PostgreSQL
-description: Manual GoWave installation in Docker with PostgreSQL 18.
+description: Manual Gowave installation in Docker with PostgreSQL 18.
 sidebar:
   order: 2
 ---

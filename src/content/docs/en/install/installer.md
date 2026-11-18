@@ -1,6 +1,6 @@
 ---
 title: Installer
-description: Install GoWave with one command. SQLite or PostgreSQL in Docker, HTTPS via Caddy, Nginx or your own proxy.
+description: Install Gowave with one command. SQLite or PostgreSQL in Docker, HTTPS via Caddy, Nginx or your own proxy.
 sidebar:
   order: 2
 ---
@@ -22,7 +22,7 @@ Run it in an SSH session: the installer asks questions and refuses to start with
 5. **Reverse proxy.** Caddy (certificates are issued and renewed automatically), Nginx with Certbot, or your own proxy, see [below](#your-own-reverse-proxy).
 6. **Panel domain.** For Caddy and Nginx the installer checks that the domain resolves and compares its A and AAAA records with the server's public IP. If they differ, for example behind the Cloudflare proxy, it asks whether to continue, since the certificate may not be issued.
 7. **Dashboard path**, `/` by default, see [below](#dashboard-path).
-8. **Local node.** Whether to install GoWave Node on the same server once the panel is ready, see [below](#local-node).
+8. **Local node.** Whether to install Gowave Node on the same server once the panel is ready, see [below](#local-node).
 
 Next it looks at who holds ports 80 and 443. Only the chosen proxy already running on this server, or the old panel it is about to stop, may hold them. The panel itself gets the first free port from 3000 up.
 
@@ -102,7 +102,7 @@ The "Change dashboard path" menu item backs up `.env`, restarts the panel and ch
 
 ## Local node
 
-The installer can put [GoWave Node](../node/install/) on the same server: after the panel is installed (the last question) or with "Install or update the local node" from the menu. It takes the `SECRET_KEY` from the panel itself and runs the [node installer](../node/install/).
+The installer can put [Gowave Node](../node/install/) on the same server: after the panel is installed (the last question) or with "Install or update the local node" from the menu. It takes the `SECRET_KEY` from the panel itself and runs the [node installer](../node/install/).
 
 - For a new node it asks for a port, `2222` by default. An existing node keeps its port and key.
 - The installer does not register the node in the panel or create a profile. Add the node yourself with the address and port it prints: `127.0.0.1` on systemd, the server's public IP in Docker, because the panel container cannot see the host's loopback.
@@ -110,20 +110,20 @@ The installer can put [GoWave Node](../node/install/) on the same server: after 
 
 ## Moving from another panel
 
-If **Remnawave** (`/opt/remnawave`) or **PasarGuard** (`/opt/pasarguard`, SQLite or PostgreSQL/TimescaleDB) is found on the server, the installer offers to move its data to GoWave, on SQLite or on PostgreSQL in Docker. PasarGuard on MySQL or MariaDB cannot be moved. The installer does not import from [3x-ui](../../migration/3x-ui/); that is a separate command.
+If **Remnawave** (`/opt/remnawave`) or **PasarGuard** (`/opt/pasarguard`, SQLite or PostgreSQL/TimescaleDB) is found on the server, the installer offers to move its data to Gowave, on SQLite or on PostgreSQL in Docker. PasarGuard on MySQL or MariaDB cannot be moved. The installer does not import from [3x-ui](../../migration/3x-ui/); that is a separate command.
 
 While copying, the installer stops only the old panel's app container; its database keeps running. After the move the old panel is stopped completely and taken out of autostart, but its containers and data stay where they are. If the move fails, the installer brings it back. See [Migration](../../migration/remnawave/).
 
 ## Running it again
 
-The same command on a server that already runs GoWave opens a menu:
+The same command on a server that already runs Gowave opens a menu:
 
-- "Update GoWave". It asks for the channel first; Enter keeps the current one. On systemd the installer downloads and verifies the new release, reapplies the service restrictions, restarts the panel and waits for it to answer. In Docker it writes the channel's image into `docker-compose.yml` and runs `docker compose pull` and `up`. A custom image (a local build or a mirror) is left alone, and in older projects with `GOWAVE_IMAGE` in `.env` the installer updates that variable instead. In older `docker-compose.yml` files it also binds the panel port to `127.0.0.1`. If no domain with HTTPS is set up yet, it offers to set one up.
+- "Update Gowave". It asks for the channel first; Enter keeps the current one. On systemd the installer downloads and verifies the new release, reapplies the service restrictions, restarts the panel and waits for it to answer. In Docker it writes the channel's image into `docker-compose.yml` and runs `docker compose pull` and `up`. A custom image (a local build or a mirror) is left alone, and in older projects with `GOWAVE_IMAGE` in `.env` the installer updates that variable instead. In older `docker-compose.yml` files it also binds the panel port to `127.0.0.1`. If no domain with HTTPS is set up yet, it offers to set one up.
 - "Set up domain and HTTPS". Change the domain or switch between Caddy, Nginx and your own proxy. The installer removes the old proxy's config for the panel, updates `PANEL_DOMAIN` and `SUB_PUBLIC_DOMAIN` in `.env` and restarts the panel.
 - "Change dashboard path", see [above](#dashboard-path).
 - "Install or update the local node", see [above](#local-node).
-- "Copy Telegram and webhook notifications from the old panel". Copies them from `/opt/remnawave/.env` into the GoWave `.env` and restarts the panel. `change_me` values are skipped. Telegram is turned on only with a bot token, and webhooks only with a valid `WEBHOOK_SECRET_HEADER`.
-- "Uninstall GoWave". You have to type `yes`. Optionally the installer first saves `.env` and the database to `/root/gowave-backup-<date>`, using `pg_dump` for PostgreSQL. Then it removes the panel, its database, the PostgreSQL volume, the services, the `gowave` command and the Caddy or Nginx site. The Caddy and Nginx packages, Docker, certificates and the local node stay. If Caddy was set up only for GoWave, it is disabled.
+- "Copy Telegram and webhook notifications from the old panel". Copies them from `/opt/remnawave/.env` into the Gowave `.env` and restarts the panel. `change_me` values are skipped. Telegram is turned on only with a bot token, and webhooks only with a valid `WEBHOOK_SECRET_HEADER`.
+- "Uninstall Gowave". You have to type `yes`. Optionally the installer first saves `.env` and the database to `/root/gowave-backup-<date>`, using `pg_dump` for PostgreSQL. Then it removes the panel, its database, the PostgreSQL volume, the services, the `gowave` command and the Caddy or Nginx site. The Caddy and Nginx packages, Docker, certificates and the local node stay. If Caddy was set up only for Gowave, it is disabled.
 
 ## Command-line options
 

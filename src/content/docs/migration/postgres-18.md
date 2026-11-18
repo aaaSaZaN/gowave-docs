@@ -1,6 +1,6 @@
 ---
 title: PostgreSQL 17 → 18
-description: Обновление базы в Docker-установке GoWave с PostgreSQL 17 до 18.
+description: Обновление базы в Docker-установке Gowave с PostgreSQL 17 до 18.
 sidebar:
   order: 5
 ---

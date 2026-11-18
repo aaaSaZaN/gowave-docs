@@ -91,13 +91,13 @@ The installed Xray core is neither overwritten nor reset. If you installed a cus
 
 ## Updating from the panel
 
-In the GoWave panel:
+In the Gowave panel:
 
 - **Xray Core**: click the core version in the node card to choose a stable release, pre-release, or enter a direct HTTPS URL to a core binary or archive.
   Example direct link:
   `https://github.com/XTLS/Xray-core/releases/download/v26.7.28/Xray-linux-64.zip`
   or a direct link to a raw binary:
   `https://example.com/builds/xray-linux-64`
-- **GoWave Node**: the node version is managed under the GoWave Node version selector. The release list is fetched from [gowave-node](https://github.com/aaaSaZaN/gowave-node). The panel sends an update command to the node, which performs a safe transactional update with automatic readiness verification.
+- **Gowave Node**: the node version is managed under the Gowave Node version selector. The release list is fetched from [gowave-node](https://github.com/aaaSaZaN/gowave-node). The panel sends an update command to the node, which performs a safe transactional update with automatic readiness verification.
 
 Panel updates need systemd. On Entware, update the node with `gowave-node update`. On an s6-only host a panel update works only with an external restart supervisor; without one the node rejects the request and keeps the current binary.

@@ -1,13 +1,13 @@
 ---
 title: Comparison with Remnawave
-description: How GoWave differs from the original Remnawave backend.
+description: How Gowave differs from the original Remnawave backend.
 sidebar:
   order: 3
 ---
 
-GoWave replaces the Remnawave backend and keeps its API. The differences are in how it works inside and in what it adds on top.
+Gowave replaces the Remnawave backend and keeps its API. The differences are in how it works inside and in what it adds on top.
 
-| | GoWave | Remnawave |
+| | Gowave | Remnawave |
 | :--- | :--- | :--- |
 | Language | Go | TypeScript (Node.js) |
 | Processes | One | Three: API, queue workers, scheduler |
@@ -22,7 +22,7 @@ GoWave replaces the Remnawave backend and keeps its API. The differences are in 
 
 Memory and startup were measured on the same setup; the methodology is on the [benchmarks](../../benchmarks/) page.
 
-## Only in GoWave
+## Only in Gowave
 
 - Running without Docker: one binary and an SQLite database.
 - An [installer](../../install/installer/) that sets up HTTPS and moves data from Remnawave and PasarGuard.
@@ -34,10 +34,10 @@ Memory and startup were measured on the same setup; the methodology is on the [b
 
 ## What works differently
 
-- **Regular expressions** in [response rules](../../features/subscription-rules/) and [templates](../../features/templates/) use RE2 (Go) syntax rather than JavaScript. Lookahead, lookbehind and backreferences are not supported, so a Remnawave rule that uses them stops matching in GoWave.
+- **Regular expressions** in [response rules](../../features/subscription-rules/) and [templates](../../features/templates/) use RE2 (Go) syntax rather than JavaScript. Lookahead, lookbehind and backreferences are not supported, so a Remnawave rule that uses them stops matching in Gowave.
 - **Docker updates** are not started from the panel: it shows the command to run on the server, see [updating](../../install/updating/).
-- **Response rule headers** (`responseModifications.headers`) are an object, `{ "name": "value" }`. Remnawave uses an array of pairs; GoWave accepts it too and converts it, see [response rules](../../features/subscription-rules/#add-a-header-for-a-client).
-- **No Redis.** GoWave skips the Redis variables, `API_INSTANCES` and the Redis Streams export; the full list is in the [reference](../../reference/environment/#what-gowave-ignores).
+- **Response rule headers** (`responseModifications.headers`) are an object, `{ "name": "value" }`. Remnawave uses an array of pairs; Gowave accepts it too and converts it, see [response rules](../../features/subscription-rules/#add-a-header-for-a-client).
+- **No Redis.** Gowave skips the Redis variables, `API_INSTANCES` and the Redis Streams export; the full list is in the [reference](../../reference/environment/#what-gowave-ignores).
 
 ## What is compatible
 
@@ -47,9 +47,9 @@ Memory and startup were measured on the same setup; the methodology is on the [b
 - **The subscription page** `remnawave/subscription-page`.
 - **Bots and integrations** that use the Remnawave API with a token.
 
-## What GoWave adds to the API
+## What Gowave adds to the API
 
-Endpoints outside the contract serve the GoWave web interface; Remnawave clients and bots do not call them. The [API reference](../../../api/) groups them under **GoWave extensions**:
+Endpoints outside the contract serve the Gowave web interface; Remnawave clients and bots do not call them. The [API reference](../../../api/) groups them under **Gowave extensions**:
 
 - `GET /api/nodes/traffic-summary` - each node's lifetime traffic, which the monthly reset does not clear;
 - `GET /api/nodes/{uuid}/logs`, `GET /api/nodes/{uuid}/updates` and `POST /api/nodes/{uuid}/updates/apply` - logs and updates of the [Go node](../../install/node/cli/);
@@ -67,4 +67,4 @@ Yandex sign-in is removed. The `yandex` fields in the OAuth settings remain for 
 
 ## Where things are documented
 
-GoWave subscriptions are covered here: [response rules](../../features/subscription-rules/), [Xray JSON, Mihomo and sing-box templates](../../features/templates/), [variables](../../features/template-variables/). Config profiles are regular Xray configs, so protocols and transports follow the [Xray documentation](https://xtls.github.io/config/).
+Gowave subscriptions are covered here: [response rules](../../features/subscription-rules/), [Xray JSON, Mihomo and sing-box templates](../../features/templates/), [variables](../../features/template-variables/). Config profiles are regular Xray configs, so protocols and transports follow the [Xray documentation](https://xtls.github.io/config/).

@@ -1,6 +1,6 @@
 ---
 title: С SQLite на Docker
-description: Перевод установки GoWave с SQLite в Docker с PostgreSQL одной командой.
+description: Перевод установки Gowave с SQLite в Docker с PostgreSQL одной командой.
 sidebar:
   order: 4
 ---
@@ -42,5 +42,5 @@ systemctl enable --now gowave
 | `--dir <путь>` | Папка проекта Docker, по умолчанию `/opt/gowave-docker` |
 | `--image <образ>` | Образ панели, по умолчанию `ghcr.io/aaasazan/gowave:latest`. Для канала dev - `ghcr.io/aaasazan/gowave:dev` |
 | `--from <путь>` | Папка текущей установки, по умолчанию та, где лежит бинарник |
-| `--from-upstream [dsn]` | Копировать в новый PostgreSQL не SQLite GoWave, а базу Remnawave. Без DSN она находится по `/opt/remnawave/.env`. Так установщик переносит Remnawave сразу в Docker |
+| `--from-upstream [dsn]` | Копировать в новый PostgreSQL не SQLite Gowave, а базу Remnawave. Без DSN она находится по `/opt/remnawave/.env`. Так установщик переносит Remnawave сразу в Docker |
 | `--yes` | Не спрашивать подтверждение |

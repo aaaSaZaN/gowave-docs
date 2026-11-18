@@ -210,7 +210,7 @@ If there is no rule for Happ yet, create the whole rule:
 If the header needs to override default subscription headers (such as `content-disposition`), add `"applyHeadersToEnd": true` alongside. Header values support [template variables](../template-variables/).
 
 :::note[Header format]
-In Remnawave `headers` is an array, `[{ "key": "providerid", "value": "12345" }]`. GoWave stores and returns an object, but still accepts the old array, so existing API clients and imported rules keep working. Saved arrays are converted to objects once when the panel is updated, and again whenever a rule is saved. If a name repeats (case does not matter), the last value wins. The other rule fields work as in Remnawave.
+In Remnawave `headers` is an array, `[{ "key": "providerid", "value": "12345" }]`. Gowave stores and returns an object, but still accepts the old array, so existing API clients and imported rules keep working. Saved arrays are converted to objects once when the panel is updated, and again whenever a rule is saved. If a name repeats (case does not matter), the last value wins. The other rule fields work as in Remnawave.
 :::
 
 ### A separate template for one user

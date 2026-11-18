@@ -24,8 +24,8 @@ const rows = [...tables[kind]].sort(
 	(a, b) => order.indexOf(a.workload) - order.indexOf(b.workload) || a.level - b.level,
 );
 const text = {
-	ru: { workload: 'Нагрузка', clients: 'Клиенты', rate: 'Запросов/с', rps: 'запросов/с', ratio: 'GoWave / Remnawave', failed: 'не уложилась в SLO' },
-	en: { workload: 'Workload', clients: 'Clients', rate: 'Requests/s', rps: 'requests/s', ratio: 'GoWave / Remnawave', failed: 'SLO failed' },
+	ru: { workload: 'Нагрузка', clients: 'Клиенты', rate: 'Запросов/с', rps: 'запросов/с', ratio: 'Gowave / Remnawave', failed: 'не уложилась в SLO' },
+	en: { workload: 'Workload', clients: 'Clients', rate: 'Requests/s', rps: 'requests/s', ratio: 'Gowave / Remnawave', failed: 'SLO failed' },
 }[lang];
 ---
 
@@ -37,7 +37,7 @@ const text = {
 					<tr>
 						<th>{text.workload}</th>
 						<th>{text.clients}</th>
-						<th>GoWave, {text.rps}</th>
+						<th>Gowave, {text.rps}</th>
 						<th>p99, ms</th>
 						<th>Remnawave, {text.rps}</th>
 						<th>p99, ms</th>
@@ -47,7 +47,7 @@ const text = {
 					<tr>
 						<th>{text.workload}</th>
 						<th>{text.rate}</th>
-						<th>GoWave p50 / p99, ms</th>
+						<th>Gowave p50 / p99, ms</th>
 						<th>Remnawave p50 / p99, ms</th>
 					</tr>
 				)

@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: GoWave Node environment variables.
+description: Gowave Node environment variables.
 sidebar:
   order: 2
 ---
@@ -38,4 +38,4 @@ A geocheck started from the panel runs `/usr/local/bin/geocheck`. If it is missi
 
 The node configuration can name a custom Xray core (`xrayConfig.geodata.core`: URL and SHA-256) and extra data files (`geodata.assets`). A custom core is first validated against the current configuration and only then switched on.
 
-The core can also be installed via CLI (`gowave-node core install --repo <owner/repo> --version <tag>`) or via direct HTTPS download URL in the GoWave web panel. When running `gowave-node update`, any custom core is preserved and remains active. Running `gowave-node core reset` reverts to the default managed core.
+The core can also be installed via CLI (`gowave-node core install --repo <owner/repo> --version <tag>`) or via direct HTTPS download URL in the Gowave web panel. When running `gowave-node update`, any custom core is preserved and remains active. Running `gowave-node core reset` reverts to the default managed core.

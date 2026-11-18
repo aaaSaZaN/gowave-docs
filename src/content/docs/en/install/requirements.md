@@ -1,6 +1,6 @@
 ---
 title: Requirements
-description: What a server needs to run GoWave.
+description: What a server needs to run Gowave.
 sidebar:
   order: 1
 ---

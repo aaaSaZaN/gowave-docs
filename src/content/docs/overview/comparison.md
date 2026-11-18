@@ -1,13 +1,13 @@
 ---
 title: Сравнение с Remnawave
-description: Чем GoWave отличается от оригинального бэкенда Remnawave.
+description: Чем Gowave отличается от оригинального бэкенда Remnawave.
 sidebar:
   order: 3
 ---
 
-GoWave заменяет бэкенд Remnawave и держит его API. Различия в том, как он устроен внутри и что добавлено сверху.
+Gowave заменяет бэкенд Remnawave и держит его API. Различия в том, как он устроен внутри и что добавлено сверху.
 
-| | GoWave | Remnawave |
+| | Gowave | Remnawave |
 | :--- | :--- | :--- |
 | Язык | Go | TypeScript (Node.js) |
 | Процессы | Один | Три: API, обработчики очередей, планировщик |
@@ -22,7 +22,7 @@ GoWave заменяет бэкенд Remnawave и держит его API. Ра�
 
 Память и время запуска измерены на одинаковом стенде, методика на странице [бенчмарков](../../benchmarks/).
 
-## Что есть только в GoWave
+## Что есть только в Gowave
 
 - Работа без Docker: один бинарник и база SQLite.
 - [Установщик](../../install/installer/), который сам настраивает HTTPS и переносит данные с Remnawave и PasarGuard.
@@ -34,10 +34,10 @@ GoWave заменяет бэкенд Remnawave и держит его API. Ра�
 
 ## Что работает иначе
 
-- **Регулярные выражения** в [правилах ответа](../../features/subscription-rules/) и [шаблонах](../../features/templates/) работают в синтаксисе RE2 (Go), а не JavaScript. Lookahead, lookbehind и обратные ссылки не поддерживаются. Правило Remnawave с такими конструкциями в GoWave перестанет совпадать.
+- **Регулярные выражения** в [правилах ответа](../../features/subscription-rules/) и [шаблонах](../../features/templates/) работают в синтаксисе RE2 (Go), а не JavaScript. Lookahead, lookbehind и обратные ссылки не поддерживаются. Правило Remnawave с такими конструкциями в Gowave перестанет совпадать.
 - **Обновление в Docker** не запускается из панели: она показывает команду для сервера, см. [обновление](../../install/updating/).
-- **Заголовки в правилах ответа** (`responseModifications.headers`) - объект `{ "имя": "значение" }`. В Remnawave это массив пар, GoWave его тоже принимает и превращает в объект, см. [правила ответа](../../features/subscription-rules/#добавить-заголовок-для-клиента).
-- **Redis не нужен.** Переменные Redis, `API_INSTANCES` и экспорт в Redis Streams GoWave пропускает, полный список - в [справочнике](../../reference/environment/#чего-в-gowave-нет).
+- **Заголовки в правилах ответа** (`responseModifications.headers`) - объект `{ "имя": "значение" }`. В Remnawave это массив пар, Gowave его тоже принимает и превращает в объект, см. [правила ответа](../../features/subscription-rules/#добавить-заголовок-для-клиента).
+- **Redis не нужен.** Переменные Redis, `API_INSTANCES` и экспорт в Redis Streams Gowave пропускает, полный список - в [справочнике](../../reference/environment/#чего-в-gowave-нет).
 
 ## Что совместимо
 
@@ -47,9 +47,9 @@ GoWave заменяет бэкенд Remnawave и держит его API. Ра�
 - **Страница подписки** `remnawave/subscription-page`.
 - **Боты и интеграции**, которые ходят в API Remnawave по токену.
 
-## Что GoWave добавляет к API
+## Что Gowave добавляет к API
 
-Эндпоинты сверх контракта нужны веб-интерфейсу GoWave, клиенты и боты Remnawave их не вызывают. В [справочнике API](../../api/) они собраны в разделе **GoWave extensions**:
+Эндпоинты сверх контракта нужны веб-интерфейсу Gowave, клиенты и боты Remnawave их не вызывают. В [справочнике API](../../api/) они собраны в разделе **Gowave extensions**:
 
 - `GET /api/nodes/traffic-summary` - трафик каждой ноды за всё время, ежемесячный сброс его не обнуляет;
 - `GET /api/nodes/{uuid}/logs`, `GET /api/nodes/{uuid}/updates` и `POST /api/nodes/{uuid}/updates/apply` - логи и обновление [Go-ноды](../../install/node/cli/);
@@ -67,4 +67,4 @@ GoWave заменяет бэкенд Remnawave и держит его API. Ра�
 
 ## Где что описано
 
-Подписки GoWave описаны здесь: [правила ответа](../../features/subscription-rules/), [шаблоны Xray JSON, Mihomo и sing-box](../../features/templates/), [переменные](../../features/template-variables/). Профили конфигурации устроены как обычные конфиги Xray, поэтому протоколы и транспорты настраиваются по [документации Xray](https://xtls.github.io/config/).
+Подписки Gowave описаны здесь: [правила ответа](../../features/subscription-rules/), [шаблоны Xray JSON, Mihomo и sing-box](../../features/templates/), [переменные](../../features/template-variables/). Профили конфигурации устроены как обычные конфиги Xray, поэтому протоколы и транспорты настраиваются по [документации Xray](https://xtls.github.io/config/).

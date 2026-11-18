@@ -7,7 +7,7 @@ sidebar:
 
 Глобальную команду `gowave` (`/usr/local/bin/gowave`) создаёт установщик. При ручной установке настройте симлинк: `ln -s /opt/gowave/gowave-server /usr/local/bin/gowave`. После `gowave migrate to-docker` команда `gowave` на хосте сама перенаправляет вызовы в контейнер.
 
-Команда доступна из любого каталога. Бинарник сам находит установку GoWave (в `/opt/gowave` или по переменной `GOWAVE_INSTALL_DIR`), подтягивает `.env` и автоматически выставляет нужные права на файлы базы данных:
+Команда доступна из любого каталога. Бинарник сам находит установку Gowave (в `/opt/gowave` или по переменной `GOWAVE_INSTALL_DIR`), подтягивает `.env` и автоматически выставляет нужные права на файлы базы данных:
 
 ```bash
 gowave cli
@@ -49,9 +49,9 @@ gowave cli
 | 5 | Принудительно включить вход по логину и паролю |
 | 6 | Сгенерировать и показать `SECRET_KEY` для нод |
 | 7 | Импорт базы из [PasarGuard](../../migration/pasarguard/) (SQLite или PostgreSQL) |
-| 8 | Перенос из PostgreSQL [Remnawave](../../migration/remnawave/) в SQLite GoWave (с предложением удалить старые контейнеры) |
+| 8 | Перенос из PostgreSQL [Remnawave](../../migration/remnawave/) в SQLite Gowave (с предложением удалить старые контейнеры) |
 | 9 | [Переход в Docker](../../migration/sqlite-to-docker/) (миграция SQLite в PostgreSQL) |
-| 10 | Перенос из PostgreSQL Remnawave напрямую в PostgreSQL GoWave |
+| 10 | Перенос из PostgreSQL Remnawave напрямую в PostgreSQL Gowave |
 | 11 | Импорт клиентов и входящих соединений из [3x-ui](../../migration/3x-ui/) (SQLite) |
 
 ## Команды
@@ -71,14 +71,14 @@ gowave cli
 | `gowave import pasarguard [путь\|dsn\|backup.zip]` | Импорт из [PasarGuard](../../migration/pasarguard/) |
 | `gowave import 3x-ui [путь]` | Импорт из [3x-ui](../../migration/3x-ui/), по умолчанию `/etc/x-ui/x-ui.db` |
 | `gowave migrate pg-to-sqlite [dsn] [файл]` | Перенос из PostgreSQL Remnawave в SQLite |
-| `gowave migrate pg-to-pg [dsn-источника] [dsn-цели] [--force]` | Перенос из PostgreSQL Remnawave в PostgreSQL GoWave |
-| `gowave migrate sqlite-to-pg [файл] [dsn] [--force]` | Копирование SQLite GoWave в уже существующую базу PostgreSQL |
+| `gowave migrate pg-to-pg [dsn-источника] [dsn-цели] [--force]` | Перенос из PostgreSQL Remnawave в PostgreSQL Gowave |
+| `gowave migrate sqlite-to-pg [файл] [dsn] [--force]` | Копирование SQLite Gowave в уже существующую базу PostgreSQL |
 | `gowave migrate to-docker` | Перевод установки с SQLite в Docker с PostgreSQL. Флаги - на странице [С SQLite на Docker](../../migration/sqlite-to-docker/) |
 | `gowave service install [каталог]` | От root: создаёт пользователя `gowave` и ограничения службы systemd, см. [Systemd и SQLite](../../install/systemd/#служба). Каталог по умолчанию `/opt/gowave` |
 | `gowave update apply <каталог>` | От root: ставит последнюю сборку канала. Эту команду запускает служба `gowave-update` при обновлении из панели, вручную она обычно не нужна |
 
 Флаг `--force` в командах `pg-to-pg` и `sqlite-to-pg` разрешает заменить данные, если в целевой базе уже есть пользователи, ноды или хосты. Без него такая база не трогается.
 
-Без аргументов команды находят источник и цель сами: Remnawave - по `/opt/remnawave/.env`, PostgreSQL GoWave - по `DATABASE_URL` из `.env` панели, а если его нет, по `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` и `POSTGRES_PORT`. В выводе пароли из DSN скрыты.
+Без аргументов команды находят источник и цель сами: Remnawave - по `/opt/remnawave/.env`, PostgreSQL Gowave - по `DATABASE_URL` из `.env` панели, а если его нет, по `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` и `POSTGRES_PORT`. В выводе пароли из DSN скрыты.
 
 Подробности о переносах - в разделе [Миграция](../../migration/remnawave/).

@@ -1,11 +1,11 @@
 ---
 title: С Docker-ноды на Go-ноду
-description: Перевод ноды с образа remnawave/node на GoWave Node.
+description: Перевод ноды с образа remnawave/node на Gowave Node.
 sidebar:
   order: 5
 ---
 
-Если нода работает в Docker на образе `remnawave/node`, её переводит на [GoWave Node](../../install/node/install/) тот же установщик (от root на сервере ноды):
+Если нода работает в Docker на образе `remnawave/node`, её переводит на [Gowave Node](../../install/node/install/) тот же установщик (от root на сервере ноды):
 
 ```bash
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/aaaSaZaN/gowave-node/main/install.sh)"

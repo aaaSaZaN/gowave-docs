@@ -5,9 +5,9 @@ sidebar:
   order: 3
 ---
 
-GoWave reads a 3x-ui database (SQLite) and imports its clients and inbounds. The installer does not offer this import; it is a separate command. The schema was checked against the 3x-ui v2.8.5 sources, and the import has seen few real databases so far, so try it on a test GoWave database first.
+Gowave reads a 3x-ui database (SQLite) and imports its clients and inbounds. The installer does not offer this import; it is a separate command. The schema was checked against the 3x-ui v2.8.5 sources, and the import has seen few real databases so far, so try it on a test Gowave database first.
 
-Before importing, stop 3x-ui (`x-ui stop`) and back up the GoWave database:
+Before importing, stop 3x-ui (`x-ui stop`) and back up the Gowave database:
 
 ```bash
 # /etc/x-ui/x-ui.db by default
@@ -19,13 +19,13 @@ gowave import 3x-ui /root/x-ui.db
 
 In the `gowave rescue` menu it is item 11. To run the import when the panel is in Docker, see the [CLI reference](../../reference/cli/).
 
-The import writes to GoWave in a single transaction. Any error rolls everything back and leaves the GoWave database as it was.
+The import writes to Gowave in a single transaction. Any error rolls everything back and leaves the Gowave database as it was.
 
 ## What is imported
 
 Each inbound becomes a configuration profile holding just that inbound, plus an internal squad named `3x-ui-<id>-<tag>`. The inbound's clients become users in that squad.
 
-| In 3x-ui | In GoWave |
+| In 3x-ui | In Gowave |
 | :--- | :--- |
 | Client `email` | Username. Without an email, `3xui_<inbound>_<number>` |
 | UUID (VLESS), password (Trojan, Shadowsocks) | The same credentials |
@@ -45,4 +45,4 @@ Each inbound becomes a configuration profile holding just that inbound, plus an 
 - Clients sharing a `subId`: the first keeps it, the others get a separate token and need new links. A kept `subId` keeps the old token, but the old link's domain and path may need reverse proxy changes.
 - IP limits are not turned into HWID limits. Other reset periods, panel settings, admin logins and the external Nginx from x-ui-pro are moved by hand.
 
-Before going live, create public hosts for the profiles and connect [GoWave Node](../../install/node/install/) to the servers where Xray ran.
+Before going live, create public hosts for the profiles and connect [Gowave Node](../../install/node/install/) to the servers where Xray ran.
