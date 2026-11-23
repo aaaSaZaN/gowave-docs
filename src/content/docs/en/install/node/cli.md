@@ -22,8 +22,9 @@ sidebar:
 | `gowave-node core install -y` | Install the latest stable Xray |
 | `gowave-node core install --version v26.7.28 -y` | Install a specific Xray version |
 | `gowave-node core install --repo owner/repo --version v1.0.0 -y` | Install a custom Xray core from another repository |
-| `gowave-node core update` | Update Xray core to the latest stable release |
-| `gowave-node core reset` | Restore the default managed core (`rw-core`) |
+| `gowave-node core update` | Update Xray from `CUSTOM_CORE_URL` if set, or choose an Xray release |
+| `gowave-node core reset` | Restore the default managed core (`rw-core`). Requires a saved stock core and `CUSTOM_CORE_URL` to be unset |
+| `gowave-node geodata update` | Refresh files configured by `GEOIP_URL` and/or `GEOSITE_URL`. Restart the node to load them |
 | `gowave-node version` | Print current node version |
 
 Run commands as the service user, usually `root` (or via `sudo`): the CLI communicates with the daemon through a private discovery file in `/run/gowave-node` (or the path set in `GOWAVE_NODE_RUNTIME_DIR`). Installs moved from the old name also keep the `remnanode` and `remnanode-go` commands.
@@ -56,9 +57,9 @@ Updates are transactional: the previous binary is saved as a backup (`.previous`
 
 The `core` command manages the Xray binary and geodata files:
 
-- `gowave-node core install` fetches releases from `XTLS/Xray-core`, verifies the binary, and downloads updated geodata (`geosite.dat`, `geoip.dat`) to the asset directory.
+- `gowave-node core install` fetches releases from `XTLS/Xray-core`, verifies the binary, and ensures usable geodata (`geosite.dat`, `geoip.dat`) is present in the asset directory. If `CUSTOM_CORE_URL` is set, it uses that source and rejects the `--version` and `--repo` flags.
 - Flags `--version <tag>` and `--repo <repo>` allow selecting a specific release or an alternative core fork.
-- `gowave-node core reset` clears custom core overrides and restores the standard managed `rw-core`.
+- `gowave-node core reset` restores the standard managed `rw-core` when `CUSTOM_CORE_URL` is unset.
 
 ### Installing a custom core
 
@@ -85,11 +86,13 @@ Requirements for the custom repository:
 
 ### What happens during node updates
 
-The `gowave-node update` command updates only the node daemon binary itself.
+By default, `gowave-node update` updates only the node daemon. With `--with-core`, it runs `gowave-node core update` after updating the node.
 
-The installed Xray core is neither overwritten nor reset. If you installed a custom core fork via `core install` or specified a core URL, the node keeps using it after being updated and restarted. To switch back to the official default core, run `gowave-node core reset`.
+An update without `--with-core` leaves the installed Xray core in place. If you installed a custom core fork via `core install` or specified a core URL, the node keeps using it after being updated and restarted. To switch a CLI-installed or panel-installed core back to the official default, run `gowave-node core reset`. To disable the local source, remove `CUSTOM_CORE_URL` and restart the node.
 
 ## Updating from the panel
+
+When `CUSTOM_CORE_URL` is set, Gowave shows that the node manages its core locally and disables core installation from the panel.
 
 In the Gowave panel:
 

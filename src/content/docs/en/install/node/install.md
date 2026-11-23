@@ -96,23 +96,23 @@ Or a direct link to a raw binary build:
 https://example.com/builds/xray-linux-64
 ```
 
-The panel instructs the node to download the asset over HTTPS, validate it, and activate the core without dropping connections.
+The panel instructs the node to download the asset over HTTPS, validate it, and restart the node service to activate the core. Active connections may be briefly interrupted. If `CUSTOM_CORE_URL` is set, the node manages the core locally and Gowave disables this action.
 
 ### Resetting to the default core
 
-To return to the default managed core (`rw-core`):
+If `CUSTOM_CORE_URL` is set, remove it from `.env` and restart Gowave Node to return control to the panel. To reset a CLI-installed or panel-installed core to the default (`rw-core`), run:
 
 ```bash
 gowave-node core reset
 ```
 
-This clears custom overrides, restores the standard `rw-core` binary, and restarts the service.
+This restores the saved stock `rw-core` binary and restarts the node.
 
 ### Node update persistence
 
-Running `gowave-node update` updates only the node daemon binary.
+By default, `gowave-node update` updates only the node daemon. With `--with-core`, it runs `gowave-node core update` after updating the node.
 
-Your active Xray core (including custom builds installed with `--repo` or via direct URLs) is **never overwritten or reset** during node updates.
+Your active Xray core (including custom builds installed with `--repo` or via direct URLs) is preserved when updating the node without `--with-core`.
 
 ## Connecting to the panel
 
